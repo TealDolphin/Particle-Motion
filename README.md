@@ -1,4 +1,5 @@
 # Particle-Motion
+# Version 0.0.1 of my Particle motion program
     """
     This program passes info about four particles and an external Electric and Magnetic field into it from a GUI
     This program then calculates how the particles travel due to the Electric and Magnetic fields and due to interacting
