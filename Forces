@@ -1,0 +1,2 @@
+def Fields(pos,vel,E0,B0,a,b,c,d,t,dt):
+    vol = 
