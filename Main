@@ -23,18 +23,30 @@ def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,
     q = [q1,q2,q3,q4]
     m = [m1,m2,m3,m4]
     t = 0
+    R = [0,0,0]
     
     # Looping through from t=0 to t=TotalTime to run the simulation.
     while t < TotalTime:
         # Half time step to help the simulation be more stable due to part of the simulation using the centerpoint rule.
         t += dt/2
         
+        R = Dist(R,pos)
+        
         # Calculating the Total E and B fields in x,y,z at each particle then passing the E,B fields back at each particle
-        E,B = Fields(pos,vel,E0,B0,q,a,b,c,d,t,dt)
-        # Calculate the Force on each particle based on the E,B fields at those particles
-        F = Forces(pos,vel,E,B,q,a,b,c,t,dt)
-        # Stepping the position of each particle forward and changing the velocity based on the force
-        x,v = Move(pos,vel,F,m,dt)
+        for i in range(3): # this loop goes over the x,y,z components for each time step.
+            vol[:] = vel[i,:] # Takes the inital velocity to take the average of the velocities to step the position forward to hopefully increase the accuracy
+            
+            for j in range(4): # Loops over the particles in the system.
+                
+                
+                E[j,i],B[j,i] = Fields(R,E0,B0,pos,vel,q,a,b,c,d,t,dt,i,j)
+                
+                
+                # Calculate the Force on each particle based on the E,B fields at those particles
+                F = Forces(R,E,B,pos,vel,q,a,b,c,t,dt,i,j)
+                # Stepping the position of each particle forward and changing the velocity based on the force
+                x,v = Move(pos,vel,vol,F,m,dt)
+            
         t += dt/2
         # Prints the new particle positions to the screen
         Draw(pos,t)
