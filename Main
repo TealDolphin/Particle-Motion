@@ -1,3 +1,8 @@
+import numpy as np
+from numpy.random import rand,randn
+from math import exp,sqrt,log,cos,sin,tan
+import matplotlib.pyplot as plt
+
 def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,m2,m3,m4,a,b,c,d,x,v"""):
     
     #Temporary declarations for testing purposes
