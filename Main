@@ -1,0 +1,38 @@
+def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,a,b,c,d,x,v"""):
+    
+    #Temporary declarations for testing purposes
+    dt =  0.01
+    pos = np.zeros((4,3))
+    vel = np.zeros((4,3))
+    TotalTime = 10
+    a = 1
+    b = 1
+    c = 1
+    d = "DebugMeQuickly"
+    
+    
+    # Combining the E and B inital declarations into a single matrix and declaring the time variable t
+    E0 = [Ex,Ey,Ez]
+    B0 = [Bx,By,Bz]
+    q = [q1,q2,q3,q4]
+    m = [m1,m2,m3,m4]
+    t = 0
+    
+    # Looping through from t=0 to t=TotalTime to run the simulation.
+    while t < TotalTime:
+        # Half time step to help the simulation be more stable due to part of the simulation using the centerpoint rule.
+        t += dt/2
+        
+        # Calculating the Total E and B fields in x,y,z at each particle then passing the 
+        E,B = Fields(pos,vel,E0,B0,q,a,b,c,d,t,dt)
+        F = Forces(pos,vel,E,B,q,a,b,c,t,dt)
+        x,v = Move(pos,vel,F,m,dt)
+        t += dt/2
+        Draw(pos,t)
+        
+        if d == "DebugMePlease":
+            print(x,v)
+            input("Continue?")
+        
+        if d == "DebugMeQuickly":
+            print(x,v)
