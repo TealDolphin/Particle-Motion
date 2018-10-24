@@ -1,4 +1,4 @@
-def Forces(R,E,B,pos,vel,q,a,b,c,t,dt):
+def Forces(E,B,vel,q):
     F = np.zeros((4,3))
     for i in range(3):
         for j in range(4):
