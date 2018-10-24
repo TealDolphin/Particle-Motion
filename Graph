@@ -1,0 +1,4 @@
+def Draw(pos,tDraw)
+    for j in range(4):
+        ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True);
+        plt.gcf().clear()
