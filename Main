@@ -41,7 +41,7 @@ def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,
         
         t += dt/2
         # Prints the new particle positions to the screen
-        Draw(pos,t)
+        Draw(pos,t-dt)
         
         # Semi-hidden debuging tools for ease of use.
         if d == "DebugMePlease":
