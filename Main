@@ -2,8 +2,10 @@ import numpy as np
 from numpy.random import rand,randn
 from math import exp,sqrt,log,cos,sin,tan
 import matplotlib.pyplot as plt
+import mpl_toolkits.mplot3d.axes3d as p3
+import matplotlib.animation as anime
 
-def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,m2,m3,m4,a,b,c,d,x,v"""):
+def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,m2,m3,m4,a,b,c,d,x,v  Xmin,Xmax,Ymin,Ymax,Zmin,Zmax"""):
     
     #Temporary declarations for testing purposes
     dt =  0.01
@@ -25,6 +27,23 @@ def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,
     t = 0
     R = np.zeros((4,3))
     
+    # Graphing initalizations for the 3-d graphs
+    fig = plt.figure()
+    ax = p3.Axes3D(fig)
+    
+    # Setting the axes properties
+    ax.set_xlim3d([Xmin,Xmax])
+    ax.set_xlabel('X')
+
+    ax.set_ylim3d([Ymin,Ymax])
+    ax.set_ylabel('Y')
+
+    ax.set_zlim3d([Zmin,Zmax])
+    ax.set_zlabel('Z')
+
+    ax.set_title('Particle Motion')
+    
+    
     # Looping through from t=0 to t=TotalTime to run the simulation.
     while t < TotalTime:
         # Half time step to help the simulation be more stable due to part of the simulation using the centerpoint rule.
@@ -41,11 +60,16 @@ def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,
         
         t += dt/2
         # Prints the new particle positions to the screen
-        Draw(pos,t-dt)
+        Draw(pos)
+        
+        
+        
+        # anime.FuncAnimation(fig)
+        # {ax.scatter3D(pos[])}
         
         # Semi-hidden debuging tools for ease of use.
         if d == "DebugMePlease":
-            print(x,v)
+            print(pos,vel)
             input("Continue?")
         if d == "DebugMeQuickly":
-            print(x,v)
+            print(pos,vel)
