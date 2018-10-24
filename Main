@@ -33,7 +33,7 @@ def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,
         R = Dist(R,pos)
         
         # Calculating the Total E and B fields in x,y,z at each particle then passing the E,B fields back at each particle
-        E[j,i],B[j,i] = Fields(R,E0,B0,pos,vel,q,a,b,c,d,t,dt,i,j)
+        E,B = Fields(R,E0,B0,pos,vel,q,a,b,c,d,t,dt,i,j)
         # Calculate the Force on each particle based on the E,B fields at those particles
         F = Forces(R,E,B,pos,vel,q,a,b,c,t,dt,i,j)
         # Stepping the position of each particle forward and changing the velocity based on the force
