@@ -1,0 +1,387 @@
+import sys
+from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QPushButton, QLineEdit
+from PyQt5.QtGui import QPainter
+from PyQt5.QtCore import pyqtSlot, Qt
+ 
+class App(QWidget):
+ 
+    def __init__(self):
+        super().__init__()
+        self.title = 'Particle Motion Simulator'
+        self.left = 90
+        self.top = 110
+        self.width = 750
+        self.height = 425
+        self.initUI()
+ 
+    def initUI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+ 
+        # Button to run program
+        button = QPushButton('Run', self)
+        button.setToolTip('Run Program')
+        button.move(self.width-92,self.height-35) 
+        button.clicked.connect(self.on_click)
+        # labeled by t for text box and l for label
+        # t or l then what the text/input is.
+        
+        # Just label section
+        lF = QLabel('Fields',self)
+        lF.move(40,10)
+        
+        lC = QLabel('Constants',self)
+        lC.move(320,10)
+        
+        lp1 = QLabel('Particle 1',self)
+        lp1.move(40,130)
+        
+        lp2 = QLabel('Particle 2',self)
+        lp2.move(320,130)
+        
+        lp3 = QLabel('Particle 3',self)
+        lp3.move(40,280)
+        
+        lp4 = QLabel('Particle 4',self)
+        lp4.move(320,280)
+        
+        lGraph = QLabel('Graph Dimentions',self)
+        lGraph.move(600,10)
+        
+        # label and input section
+        tEx = QLineEdit(self)
+        tEx.move(40,30)
+        tEx.resize(100,20)
+        lEx = QLabel('Ex',self)
+        lEx.move(20,35)
+        
+        tEy = QLineEdit(self)
+        tEy.move(40,60)
+        tEy.resize(100,20)
+        lEy = QLabel('Ey',self)
+        lEy.move(20,65)
+        
+        tEz = QLineEdit(self)
+        tEz.move(40,90)
+        tEz.resize(100,20)
+        lEz = QLabel('Ez',self)
+        lEz.move(20,95)
+        
+        tBx = QLineEdit(self)
+        tBx.move(170,30)
+        tBx.resize(100,20)
+        lBx = QLabel('Bx',self)
+        lBx.move(150,35)
+        
+        tBy = QLineEdit(self)
+        tBy.move(170,60)
+        tBy.resize(100,20)
+        lBy = QLabel('By',self)
+        lBy.move(150,65)
+
+        tBz = QLineEdit(self)
+        tBz.move(170,90)
+        tBz.resize(100,20)
+        lBz = QLabel('Bz',self)
+        lBz.move(150,95)
+        
+        ta = QLineEdit(self)
+        ta.move(330,30)
+        ta.resize(100,20)
+        la = QLabel('a',self)
+        la.move(310,35)
+        
+        tb = QLineEdit(self)
+        tb.move(330,60)
+        tb.resize(100,20)
+        lb = QLabel('b',self)
+        lb.move(310,65)
+        
+        tc = QLineEdit(self)
+        tc.move(330,90)
+        tc.resize(100,20)
+        lc = QLabel('c',self)
+        lc.move(310,95)
+        
+        td = QLineEdit(self)
+        td.move(460,30)
+        td.resize(100,20)
+        ld = QLabel('d',self)
+        ld.move(440,35)
+        
+        tTT = QLineEdit(self)
+        tTT.move(490,60)
+        tTT.resize(70,20)
+        lTT = QLabel('TotalTime',self)
+        lTT.move(440,65)
+        
+        tdt = QLineEdit(self)
+        tdt.move(460,90)
+        tdt.resize(100,20)
+        ldt = QLabel('dt',self)
+        ldt.move(440,95)
+        
+        # Particle 1 text box declarations
+        tp1x = QLineEdit(self)
+        tp1x.move(40,150)
+        tp1x.resize(100,20)
+        lp1x = QLabel('x',self)
+        lp1x.move(20,155)
+        
+        tp1y = QLineEdit(self)
+        tp1y.move(40,180)
+        tp1y.resize(100,20)
+        lp1y = QLabel('y',self)
+        lp1y.move(20,185)
+        
+        tp1z = QLineEdit(self)
+        tp1z.move(40,210)
+        tp1z.resize(100,20)
+        lp1z = QLabel('z',self)
+        lp1z.move(20,215)
+        
+        tp1q = QLineEdit(self)
+        tp1q.move(40,240)
+        tp1q.resize(100,20)
+        lp1q = QLabel('q',self)
+        lp1q.move(20,245)
+        
+        tp1Vx = QLineEdit(self)
+        tp1Vx.move(170,150)
+        tp1Vx.resize(100,20)
+        lp1Vx = QLabel('Vx',self)
+        lp1Vx.move(150,155)
+        
+        tp1Vy = QLineEdit(self)
+        tp1Vy.move(170,180)
+        tp1Vy.resize(100,20)
+        lp1Vy = QLabel('Vy',self)
+        lp1Vy.move(150,185)
+    
+        tp1Vz = QLineEdit(self)
+        tp1Vz.move(170,210)
+        tp1Vz.resize(100,20)
+        lp1Vz = QLabel('Vz',self)
+        lp1Vz.move(150,215)
+        
+        tp1m = QLineEdit(self)
+        tp1m.move(170,240)
+        tp1m.resize(100,20)
+        lp1m = QLabel('m',self)
+        lp1m.move(150,245)
+        
+        # Particle 2 text box declarations
+        tp2x = QLineEdit(self)
+        tp2x.move(320,150)
+        tp2x.resize(100,20)
+        lp2x = QLabel('x',self)
+        lp2x.move(300,155)
+        
+        tp2y = QLineEdit(self)
+        tp2y.move(320,180)
+        tp2y.resize(100,20)
+        lp2y = QLabel('y',self)
+        lp2y.move(300,185)
+        
+        tp2z = QLineEdit(self)
+        tp2z.move(320,210)
+        tp2z.resize(100,20)
+        lp2z = QLabel('z',self)
+        lp2z.move(300,215)
+        
+        tp2q = QLineEdit(self)
+        tp2q.move(320,240)
+        tp2q.resize(100,20)
+        lp2q = QLabel('q',self)
+        lp2q.move(300,245)
+        
+        tp2Vx = QLineEdit(self)
+        tp2Vx.move(450,150)
+        tp2Vx.resize(100,20)
+        lp2Vx = QLabel('Vx',self)
+        lp2Vx.move(430,155)
+    
+        tp2Vy = QLineEdit(self)
+        tp2Vy.move(450,180)
+        tp2Vy.resize(100,20)
+        lp2Vy = QLabel('Vy',self)
+        lp2Vy.move(430,185)
+
+        tp2Vz = QLineEdit(self)
+        tp2Vz.move(450,210)
+        tp2Vz.resize(100,20)
+        lp2Vz = QLabel('Vz',self)
+        lp2Vz.move(430,215)
+    
+        tp2m = QLineEdit(self)
+        tp2m.move(450,240)
+        tp2m.resize(100,20)
+        lp2m = QLabel('m',self)
+        lp2m.move(430,245)
+        
+        # Particle 3 text box declarations
+        tp3x = QLineEdit(self)
+        tp3x.move(40,300)
+        tp3x.resize(100,20)
+        lp3x = QLabel('x',self)
+        lp3x.move(20,305)
+    
+        tp3y = QLineEdit(self)
+        tp3y.move(40,330)
+        tp3y.resize(100,20)
+        lp3y = QLabel('y',self)
+        lp3y.move(20,335)
+        
+        tp3z = QLineEdit(self)
+        tp3z.move(40,360)
+        tp3z.resize(100,20)
+        lp3z = QLabel('z',self)
+        lp3z.move(20,365)
+        
+        tp3q = QLineEdit(self)
+        tp3q.move(40,390)
+        tp3q.resize(100,20)
+        lp3q = QLabel('q',self)
+        lp3q.move(20,395)
+    
+        tp3Vx = QLineEdit(self)
+        tp3Vx.move(170,300)
+        tp3Vx.resize(100,20)
+        lp3Vx = QLabel('Vx',self)
+        lp3Vx.move(150,305)
+    
+        tp3Vy = QLineEdit(self)
+        tp3Vy.move(170,330)
+        tp3Vy.resize(100,20)
+        lp3Vy = QLabel('Vy',self)
+        lp3Vy.move(150,335)
+    
+        tp3Vz = QLineEdit(self)
+        tp3Vz.move(170,360)
+        tp3Vz.resize(100,20)
+        lp3Vz = QLabel('Vz',self)
+        lp3Vz.move(150,365)
+        
+        tp3m = QLineEdit(self)
+        tp3m.move(170,390)
+        tp3m.resize(100,20)
+        lp3m = QLabel('m',self)
+        lp3m.move(150,395)
+        
+        # Particle 4 text box declarations
+        tp4x = QLineEdit(self)
+        tp4x.move(320,300)
+        tp4x.resize(100,20)
+        lp4x = QLabel('x',self)
+        lp4x.move(300,305)
+        
+        tp4y = QLineEdit(self)
+        tp4y.move(320,330)
+        tp4y.resize(100,20)
+        lp4y = QLabel('y',self)
+        lp4y.move(300,335)
+        
+        tp4z = QLineEdit(self)
+        tp4z.move(320,360)
+        tp4z.resize(100,20)
+        lp4z = QLabel('z',self)
+        lp4z.move(300,365)
+    
+        tp4q = QLineEdit(self)
+        tp4q.move(320,390)
+        tp4q.resize(100,20)
+        lp4q = QLabel('q',self)
+        lp4q.move(300,395)
+        
+        tp4Vx = QLineEdit(self)
+        tp4Vx.move(450,300)
+        tp4Vx.resize(100,20)
+        lp4Vx = QLabel('Vx',self)
+        lp4Vx.move(430,305)
+        
+        tp4Vy = QLineEdit(self)
+        tp4Vy.move(450,330)
+        tp4Vy.resize(100,20)
+        lp4Vy = QLabel('Vy',self)
+        lp4Vy.move(430,335)
+    
+        tp4Vz = QLineEdit(self)
+        tp4Vz.move(450,360)
+        tp4Vz.resize(100,20)
+        lp4Vz = QLabel('Vz',self)
+        lp4Vz.move(430,365)
+        
+        tp4m = QLineEdit(self)
+        tp4m.move(450,390)
+        tp4m.resize(100,20)
+        lp4m = QLabel('m',self)
+        lp4m.move(430,395)
+        
+        # Graph dimentions GUI section
+        tXmax = QLineEdit(self)
+        tXmax.move(630,30)
+        tXmax.resize(100,20)
+        lXmax = QLabel('Xmax',self)
+        lXmax.move(600,35)
+    
+        tXmin = QLineEdit(self)
+        tXmin.move(630,60)
+        tXmin.resize(100,20)
+        lXmin = QLabel('Xmin',self)
+        lXmin.move(600,65)
+        
+        tYmax = QLineEdit(self)
+        tYmax.move(630,90)
+        tYmax.resize(100,20)
+        lYmax = QLabel('Ymax',self)
+        lYmax.move(600,95)
+        
+        tYmin = QLineEdit(self)
+        tYmin.move(630,120)
+        tYmin.resize(100,20)
+        lYmin = QLabel('Ymin',self)
+        lYmin.move(600,125)
+    
+        tZmax = QLineEdit(self)
+        tZmax.move(630,150)
+        tZmax.resize(100,20)
+        lZmax = QLabel('Zmax',self)
+        lZmax.move(600,155)
+        
+        tZmin = QLineEdit(self)
+        tZmin.move(630,180)
+        tZmin.resize(100,20)
+        lZmin = QLabel('Zmin',self)
+        lZmin.move(600,185)
+        
+        # Add paint widget and paint
+        self.m = PaintWidget(self)
+        self.m.move(0,0)
+        self.m.resize(self.width,self.height)
+        
+        button.clicked.connect(self.on_click)
+        self.show()
+        
+    @pyqtSlot()
+    def on_click(self):
+        print('PyQt5 button click')
+        
+class PaintWidget(QWidget):
+    def paintEvent(self,event):
+        
+        # Create the lines in the graph for visual effects
+        qp = QPainter(self)
+        qp.setPen(Qt.black)
+        size = self.size()
+        
+        for i in range(580):
+            qp.drawPoint(580,i)
+            qp.drawPoint(290,i)
+            qp.drawPoint(i,122)
+            qp.drawPoint(i,272)
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
+   
