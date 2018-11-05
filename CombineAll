@@ -1,0 +1,706 @@
+"""
+First attempt at assembling the program and running it for my final project.
+"""
+import sys
+from PyQt5.QtWidgets import QMessageBox, QLabel, QApplication, QWidget, QPushButton, QLineEdit, QInputDialog
+from PyQt5.QtGui import QPainter
+from PyQt5.QtCore import Qt
+import numpy as np
+
+class App(QWidget):
+    
+    def __init__(self):
+        super().__init__()
+        self.title = 'Particle Motion Simulator'
+        self.left = 90
+        self.top = 110
+        self.width = 750
+        self.height = 425
+        self.initUI()
+ 
+    def initUI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+ 
+        # Button to run program
+        bRun = QPushButton('Run', self)
+        bRun.setToolTip('Run Program')
+        bRun.move(self.width-92,self.height-35) 
+        bRun.clicked.connect(self.on_click)
+        
+        # Button to load variables from save file
+        bLoad = QPushButton('Load', self)
+        bLoad.setToolTip('Load variables from a file.')
+        bLoad.move(self.width-92,self.height-95) 
+        bLoad.clicked.connect(self.on_click0)
+        
+        # Button to save variables to save file
+        bSave = QPushButton('Save', self)
+        bSave.setToolTip('Save variables to a file to use later.')
+        bSave.move(self.width-92,self.height-65) 
+        bSave.clicked.connect(self.on_click1)
+        
+        
+        # Just label section
+        self.lF = QLabel('Fields',self)
+        self.lF.move(40,10)
+        
+        self.lC = QLabel('Constants',self)
+        self.lC.move(320,10)
+        
+        self.lp1 = QLabel('Particle 1',self)
+        self.lp1.move(40,130)
+        
+        self.lp2 = QLabel('Particle 2',self)
+        self.lp2.move(320,130)
+        
+        self.lp3 = QLabel('Particle 3',self)
+        self.lp3.move(40,280)
+        
+        self.lp4 = QLabel('Particle 4',self)
+        self.lp4.move(320,280)
+        
+        self.lGraph = QLabel('Graph Dimentions',self)
+        self.lGraph.move(600,10)
+        
+        # Textboxes declaration section
+        # labeled by t for text box and l for label t or l then what the text/input is.
+        self.tEx = QLineEdit(self)
+        self.tEx.move(40,30)
+        self.tEx.resize(100,20)
+        self.lEx = QLabel('Ex',self)
+        self.lEx.move(20,35)
+        
+        self.tEy = QLineEdit(self)
+        self.tEy.move(40,60)
+        self.tEy.resize(100,20)
+        self.lEy = QLabel('Ey',self)
+        self.lEy.move(20,65)
+        
+        self.tEz = QLineEdit(self)
+        self.tEz.move(40,90)
+        self.tEz.resize(100,20)
+        self.lEz = QLabel('Ez',self)
+        self.lEz.move(20,95)
+        
+        self.tBx = QLineEdit(self)
+        self.tBx.move(170,30)
+        self.tBx.resize(100,20)
+        self.lBx = QLabel('Bx',self)
+        self.lBx.move(150,35)
+        
+        self.tBy = QLineEdit(self)
+        self.tBy.move(170,60)
+        self.tBy.resize(100,20)
+        self.lBy = QLabel('By',self)
+        self.lBy.move(150,65)
+
+        self.tBz = QLineEdit(self)
+        self.tBz.move(170,90)
+        self.tBz.resize(100,20)
+        self.lBz = QLabel('Bz',self)
+        self.lBz.move(150,95)
+        
+        self.ta = QLineEdit(self)
+        self.ta.move(330,30)
+        self.ta.resize(100,20)
+        self.la = QLabel('a',self)
+        self.la.move(310,35)
+        
+        self.tb = QLineEdit(self)
+        self.tb.move(330,60)
+        self.tb.resize(100,20)
+        self.lb = QLabel('b',self)
+        self.lb.move(310,65)
+        
+        self.tc = QLineEdit(self)
+        self.tc.move(330,90)
+        self.tc.resize(100,20)
+        self.lc = QLabel('c',self)
+        self.lc.move(310,95)
+        
+        self.td = QLineEdit(self)
+        self.td.move(460,30)
+        self.td.resize(100,20)
+        self.ld = QLabel('d',self)
+        self.ld.move(440,35)
+        
+        self.tTT = QLineEdit(self)
+        self.tTT.move(490,60)
+        self.tTT.resize(70,20)
+        self.lTT = QLabel('TotalTime',self)
+        self.lTT.move(440,65)
+        
+        self.tdt = QLineEdit(self)
+        self.tdt.move(460,90)
+        self.tdt.resize(100,20)
+        self.ldt = QLabel('dt',self)
+        self.ldt.move(440,95)
+        
+        # Particle 1 text box declarations
+        self.tp1x = QLineEdit(self)
+        self.tp1x.move(40,150)
+        self.tp1x.resize(100,20)
+        self.lp1x = QLabel('x',self)
+        self.lp1x.move(20,155)
+        
+        self.tp1y = QLineEdit(self)
+        self.tp1y.move(40,180)
+        self.tp1y.resize(100,20)
+        self.lp1y = QLabel('y',self)
+        self.lp1y.move(20,185)
+        
+        self.tp1z = QLineEdit(self)
+        self.tp1z.move(40,210)
+        self.tp1z.resize(100,20)
+        self.lp1z = QLabel('z',self)
+        self.lp1z.move(20,215)
+        
+        self.tp1q = QLineEdit(self)
+        self.tp1q.move(40,240)
+        self.tp1q.resize(100,20)
+        self.lp1q = QLabel('q',self)
+        self.lp1q.move(20,245)
+        
+        self.tp1Vx = QLineEdit(self)
+        self.tp1Vx.move(170,150)
+        self.tp1Vx.resize(100,20)
+        self.lp1Vx = QLabel('Vx',self)
+        self.lp1Vx.move(150,155)
+        
+        self.tp1Vy = QLineEdit(self)
+        self.tp1Vy.move(170,180)
+        self.tp1Vy.resize(100,20)
+        self.lp1Vy = QLabel('Vy',self)
+        self.lp1Vy.move(150,185)
+    
+        self.tp1Vz = QLineEdit(self)
+        self.tp1Vz.move(170,210)
+        self.tp1Vz.resize(100,20)
+        self.lp1Vz = QLabel('Vz',self)
+        self.lp1Vz.move(150,215)
+        
+        self.tp1m = QLineEdit(self)
+        self.tp1m.move(170,240)
+        self.tp1m.resize(100,20)
+        self.lp1m = QLabel('m',self)
+        self.lp1m.move(150,245)
+        
+        # Particle 2 text box declarations
+        self.tp2x = QLineEdit(self)
+        self.tp2x.move(320,150)
+        self.tp2x.resize(100,20)
+        self.lp2x = QLabel('x',self)
+        self.lp2x.move(300,155)
+        
+        self.tp2y = QLineEdit(self)
+        self.tp2y.move(320,180)
+        self.tp2y.resize(100,20)
+        self.lp2y = QLabel('y',self)
+        self.lp2y.move(300,185)
+        
+        self.tp2z = QLineEdit(self)
+        self.tp2z.move(320,210)
+        self.tp2z.resize(100,20)
+        self.lp2z = QLabel('z',self)
+        self.lp2z.move(300,215)
+        
+        self.tp2q = QLineEdit(self)
+        self.tp2q.move(320,240)
+        self.tp2q.resize(100,20)
+        self.lp2q = QLabel('q',self)
+        self.lp2q.move(300,245)
+        
+        self.tp2Vx = QLineEdit(self)
+        self.tp2Vx.move(450,150)
+        self.tp2Vx.resize(100,20)
+        self.lp2Vx = QLabel('Vx',self)
+        self.lp2Vx.move(430,155)
+    
+        self.tp2Vy = QLineEdit(self)
+        self.tp2Vy.move(450,180)
+        self.tp2Vy.resize(100,20)
+        self.lp2Vy = QLabel('Vy',self)
+        self.lp2Vy.move(430,185)
+
+        self.tp2Vz = QLineEdit(self)
+        self.tp2Vz.move(450,210)
+        self.tp2Vz.resize(100,20)
+        self.lp2Vz = QLabel('Vz',self)
+        self.lp2Vz.move(430,215)
+    
+        self.tp2m = QLineEdit(self)
+        self.tp2m.move(450,240)
+        self.tp2m.resize(100,20)
+        self.lp2m = QLabel('m',self)
+        self.lp2m.move(430,245)
+        
+        # Particle 3 text box declarations
+        self.tp3x = QLineEdit(self)
+        self.tp3x.move(40,300)
+        self.tp3x.resize(100,20)
+        self.lp3x = QLabel('x',self)
+        self.lp3x.move(20,305)
+    
+        self.tp3y = QLineEdit(self)
+        self.tp3y.move(40,330)
+        self.tp3y.resize(100,20)
+        self.lp3y = QLabel('y',self)
+        self.lp3y.move(20,335)
+        
+        self.tp3z = QLineEdit(self)
+        self.tp3z.move(40,360)
+        self.tp3z.resize(100,20)
+        self.lp3z = QLabel('z',self)
+        self.lp3z.move(20,365)
+        
+        self.tp3q = QLineEdit(self)
+        self.tp3q.move(40,390)
+        self.tp3q.resize(100,20)
+        self.lp3q = QLabel('q',self)
+        self.lp3q.move(20,395)
+    
+        self.tp3Vx = QLineEdit(self)
+        self.tp3Vx.move(170,300)
+        self.tp3Vx.resize(100,20)
+        self.lp3Vx = QLabel('Vx',self)
+        self.lp3Vx.move(150,305)
+    
+        self.tp3Vy = QLineEdit(self)
+        self.tp3Vy.move(170,330)
+        self.tp3Vy.resize(100,20)
+        self.lp3Vy = QLabel('Vy',self)
+        self.lp3Vy.move(150,335)
+    
+        self.tp3Vz = QLineEdit(self)
+        self.tp3Vz.move(170,360)
+        self.tp3Vz.resize(100,20)
+        self.lp3Vz = QLabel('Vz',self)
+        self.lp3Vz.move(150,365)
+        
+        self.tp3m = QLineEdit(self)
+        self.tp3m.move(170,390)
+        self.tp3m.resize(100,20)
+        self.lp3m = QLabel('m',self)
+        self.lp3m.move(150,395)
+        
+        # Particle 4 text box declarations
+        self.tp4x = QLineEdit(self)
+        self.tp4x.move(320,300)
+        self.tp4x.resize(100,20)
+        self.lp4x = QLabel('x',self)
+        self.lp4x.move(300,305)
+        
+        self.tp4y = QLineEdit(self)
+        self.tp4y.move(320,330)
+        self.tp4y.resize(100,20)
+        self.lp4y = QLabel('y',self)
+        self.lp4y.move(300,335)
+        
+        self.tp4z = QLineEdit(self)
+        self.tp4z.move(320,360)
+        self.tp4z.resize(100,20)
+        self.lp4z = QLabel('z',self)
+        self.lp4z.move(300,365)
+    
+        self.tp4q = QLineEdit(self)
+        self.tp4q.move(320,390)
+        self.tp4q.resize(100,20)
+        self.lp4q = QLabel('q',self)
+        self.lp4q.move(300,395)
+        
+        self.tp4Vx = QLineEdit(self)
+        self.tp4Vx.move(450,300)
+        self.tp4Vx.resize(100,20)
+        self.lp4Vx = QLabel('Vx',self)
+        self.lp4Vx.move(430,305)
+        
+        self.tp4Vy = QLineEdit(self)
+        self.tp4Vy.move(450,330)
+        self.tp4Vy.resize(100,20)
+        self.lp4Vy = QLabel('Vy',self)
+        self.lp4Vy.move(430,335)
+    
+        self.tp4Vz = QLineEdit(self)
+        self.tp4Vz.move(450,360)
+        self.tp4Vz.resize(100,20)
+        self.lp4Vz = QLabel('Vz',self)
+        self.lp4Vz.move(430,365)
+        
+        self.tp4m = QLineEdit(self)
+        self.tp4m.move(450,390)
+        self.tp4m.resize(100,20)
+        self.lp4m = QLabel('m',self)
+        self.lp4m.move(430,395)
+        
+        # Graph dimentions GUI section
+        
+        self.tXmax = QLineEdit(self)
+        self.tXmax.move(630,30)
+        self.tXmax.resize(100,20)
+        self.lXmax = QLabel('Xmax',self)
+        self.lXmax.move(600,35)
+    
+        self.tXmin = QLineEdit(self)
+        self.tXmin.move(630,60)
+        self.tXmin.resize(100,20)
+        self.lXmin = QLabel('Xmin',self)
+        self.lXmin.move(600,65)
+        
+        self.tYmax = QLineEdit(self)
+        self.tYmax.move(630,90)
+        self.tYmax.resize(100,20)
+        self.lYmax = QLabel('Ymax',self)
+        self.lYmax.move(600,95)
+        
+        self.tYmin = QLineEdit(self)
+        self.tYmin.move(630,120)
+        self.tYmin.resize(100,20)
+        self.lYmin = QLabel('Ymin',self)
+        self.lYmin.move(600,125)
+    
+        self.tZmax = QLineEdit(self)
+        self.tZmax.move(630,150)
+        self.tZmax.resize(100,20)
+        self.lZmax = QLabel('Zmax',self)
+        self.lZmax.move(600,155)
+        
+        self.tZmin = QLineEdit(self)
+        self.tZmin.move(630,180)
+        self.tZmin.resize(100,20)
+        self.lZmin = QLabel('Zmin',self)
+        self.lZmin.move(600,185)
+        """
+        # Add paint widget and paint
+        self.m = PaintWidget(self)
+        self.m.move(0,0)
+        self.m.resize(self.width,self.height)
+        """
+        
+        self.show()
+        
+
+    # The button that calls main() and runs the program
+    def on_click(self):
+        print('call main')
+        
+        # matrix declarations for the variables to pass into the main function.
+        E0 = np.zeros(3)
+        B0 = np.zeros(3)
+        q = np.zeros(4)
+        mass = np.zeros(4)
+        pos = np.zeros((4,3))
+        vel = np.zeros((4,3))
+        dim = np.zeros((2,3))
+        
+        # Section to pass all the info in the text boxes into variables.
+        E0[0] = str(self.tEx.text())  #self.tEx.text()
+        E0[1] = str(self.tEy.text())
+        E0[2] = str(self.tEz.text())
+        B0[0] = str(self.tBx.text())
+        B0[1] = str(self.tBy.text())
+        B0[2] = str(self.tBz.text())
+        pos[0,0] = float(self.tp1x.text())
+        pos[0,1] = float(self.tp1y.text())
+        pos[0,2] = float(self.tp1z.text())
+        pos[1,0] = float(self.tp2x.text())
+        pos[1,1] = float(self.tp2y.text())
+        pos[1,2] = float(self.tp2z.text())
+        pos[2,0] = float(self.tp3x.text())
+        pos[2,1] = float(self.tp3y.text())
+        pos[2,2] = float(self.tp3z.text())
+        pos[3,0] = float(self.tp4x.text())
+        pos[3,1] = float(self.tp4y.text())
+        pos[3,2] = float(self.tp4z.text())
+        vel[0,0] = float(self.tp1Vx.text())
+        vel[0,1] = float(self.tp1Vy.text())
+        vel[0,2] = float(self.tp1Vz.text())
+        vel[1,0] = float(self.tp2Vx.text())
+        vel[1,1] = float(self.tp2Vy.text())
+        vel[1,2] = float(self.tp2Vz.text())
+        vel[2,0] = float(self.tp3Vx.text())
+        vel[2,1] = float(self.tp3Vy.text())
+        vel[2,2] = float(self.tp3Vz.text())
+        vel[3,0] = float(self.tp4Vx.text())
+        vel[3,1] = float(self.tp4Vy.text())
+        vel[3,2] = float(self.tp4Vz.text())
+        q[0] = float(self.tp1q.text())
+        q[1] = float(self.tp2q.text())
+        q[2] = float(self.tp3q.text())
+        q[3] = float(self.tp4q.text())
+        mass[0] = float(self.tp1m.text())
+        mass[1] = float(self.tp2m.text())
+        mass[2] = float(self.tp3m.text())
+        mass[3] = float(self.tp4m.text())
+        a = float(self.ta.text())
+        b = float(self.tb.text())
+        c = float(self.tc.text())
+        d = float(self.td.text())
+        TotalTime = float(self.tTT.text())
+        dt = float(self.tdt.text())
+        dim[0,0] = float(self.tXmin.text())
+        dim[0,1] = float(self.tYmin.text())
+        dim[0,2] = float(self.tZmin.text())
+        dim[1,0] = float(self.tXmax.text())
+        dim[1,1] = float(self.tYmax.text())
+        dim[1,2] = float(self.tZmax.text())
+        
+        # Calling the main function with the variables in the text boxes
+        main(E0,B0,pos,vel,q,mass,a,b,c,d,TotalTime,dt,dim)
+
+    # Button to load values into the text boxes from a file
+    def on_click0(self):
+        print('load')
+    
+        saveList = []
+        
+        filename = self.getText()
+        if filename != 'error':
+            File = open(filename, 'r')
+            for line in File:
+                saveList.append(line)
+            File.close()
+        else:
+            self.errorLoad()
+            for i in range(50):
+                saveList[i] = ""
+        
+        saveList = np.array(saveList,dtype=str)
+        
+        self.tEx.setText(saveList[0])
+        self.tEy.setText(saveList[1])
+        self.tEz.setText(saveList[2])
+        self.tBx.setText(saveList[3])
+        self.tBy.setText(saveList[4])
+        self.tBz.setText(saveList[5])
+        self.tp1x.setText(saveList[6])
+        self.tp1y.setText(saveList[7])
+        self.tp1z.setText(saveList[8])
+        self.tp2x.setText(saveList[9])
+        self.tp2y.setText(saveList[10])
+        self.tp2z.setText(saveList[11])
+        self.tp3x.setText(saveList[12])
+        self.tp3y.setText(saveList[13])
+        self.tp3z.setText(saveList[14])
+        self.tp4x.setText(saveList[15])
+        self.tp4y.setText(saveList[16])
+        self.tp4z.setText(saveList[17])
+        self.tp1Vx.setText(saveList[18])
+        self.tp1Vy.setText(saveList[19])
+        self.tp1Vz.setText(saveList[20])
+        self.tp2Vx.setText(saveList[21])
+        self.tp2Vy.setText(saveList[22])
+        self.tp2Vz.setText(saveList[23])
+        self.tp3Vx.setText(saveList[24])
+        self.tp3Vy.setText(saveList[25])
+        self.tp3Vz.setText(saveList[26])
+        self.tp4Vx.setText(saveList[27])
+        self.tp4Vy.setText(saveList[28])
+        self.tp4Vz.setText(saveList[29])
+        self.tp1q.setText(saveList[30])
+        self.tp2q.setText(saveList[31])
+        self.tp3q.setText(saveList[32])
+        self.tp4q.setText(saveList[33])
+        self.tp1m.setText(saveList[34])
+        self.tp2m.setText(saveList[35])
+        self.tp3m.setText(saveList[36])
+        self.tp4m.setText(saveList[37])
+        self.ta.setText(saveList[38])
+        self.tb.setText(saveList[39])
+        self.tc.setText(saveList[40])
+        self.td.setText(saveList[41])
+        self.tTT.setText(saveList[42])
+        self.tdt.setText(saveList[43])
+        self.tXmin.setText(saveList[44])
+        self.tYmin.setText(saveList[45])
+        self.tZmin.setText(saveList[46])
+        self.tXmax.setText(saveList[47])
+        self.tYmax.setText(saveList[48])
+        self.tZmax.setText(saveList[49])        
+        
+    # Button to save values to a file for use later
+    def on_click1(self):
+        print('save')
+        saveList = ["" for i in range(50)]
+        
+        saveList[0] = str(self.tEx.text()) + " \n"
+        saveList[1] = str(self.tEy.text()) + " \n"
+        saveList[2] = str(self.tEz.text()) + " \n"
+        saveList[3] = str(self.tBx.text()) + " \n"
+        saveList[4] = str(self.tBy.text()) + " \n"
+        saveList[5] = str(self.tBz.text()) + " \n"
+        saveList[6] = str(self.tp1x.text()) + " \n"
+        saveList[7] = str(self.tp1y.text()) + " \n"
+        saveList[8] = str(self.tp1z.text()) + " \n"
+        saveList[9] = str(self.tp2x.text()) + " \n"
+        saveList[10] = str(self.tp2y.text()) + " \n"
+        saveList[11] = str(self.tp2z.text()) + " \n"
+        saveList[12] = str(self.tp3x.text()) + " \n"
+        saveList[13] = str(self.tp3y.text()) + " \n"
+        saveList[14] = str(self.tp3z.text()) + " \n"
+        saveList[15] = str(self.tp4x.text()) + " \n"
+        saveList[16] = str(self.tp4y.text()) + " \n"
+        saveList[17] = str(self.tp4z.text()) + " \n"
+        saveList[18] = str(self.tp1Vx.text()) + " \n"
+        saveList[19] = str(self.tp1Vy.text()) + " \n"
+        saveList[20] = str(self.tp1Vz.text()) + " \n"
+        saveList[21] = str(self.tp2Vx.text()) + " \n"
+        saveList[22] = str(self.tp2Vy.text()) + " \n"
+        saveList[23] = str(self.tp2Vz.text()) + " \n"
+        saveList[24] = str(self.tp3Vx.text()) + " \n"
+        saveList[25] = str(self.tp3Vy.text()) + " \n"
+        saveList[26] = str(self.tp3Vz.text()) + " \n"
+        saveList[27] = str(self.tp4Vx.text()) + " \n"
+        saveList[28] = str(self.tp4Vy.text()) + " \n"
+        saveList[29] = str(self.tp4Vz.text()) + " \n"
+        saveList[30] = str(self.tp1q.text()) + " \n"
+        saveList[31] = str(self.tp2q.text()) + " \n"
+        saveList[32] = str(self.tp3q.text()) + " \n"
+        saveList[33] = str(self.tp4q.text()) + " \n"
+        saveList[34] = str(self.tp1m.text()) + " \n"
+        saveList[35] = str(self.tp2m.text()) + " \n"
+        saveList[36] = str(self.tp3m.text()) + " \n"
+        saveList[37] = str(self.tp4m.text()) + " \n"
+        saveList[38] = str(self.ta.text()) + " \n"
+        saveList[39] = str(self.tb.text()) + " \n"
+        saveList[40] = str(self.tc.text()) + " \n"
+        saveList[41] = str(self.td.text()) + " \n"
+        saveList[42] = str(self.tTT.text()) + " \n"
+        saveList[43] = str(self.tdt.text()) + " \n"
+        saveList[44] = str(self.tXmin.text()) + " \n"
+        saveList[45] = str(self.tYmin.text()) + " \n"
+        saveList[46] = str(self.tZmin.text()) + " \n"
+        saveList[47] = str(self.tXmax.text()) + " \n"
+        saveList[48] = str(self.tYmax.text()) + " \n"
+        saveList[49] = str(self.tZmax.text()) + " \n"
+        
+        filename = self.getText()
+        
+        # Uses the built in pickle to save the file
+        File = open(filename, 'w')
+        if filename != 'error':
+            for i in range(50):
+                File.write(str(saveList[i]))
+            File.close()
+        else:
+            self.errorSave()
+        
+    # Generates a prompt to ask for a file name for the file that is being saved
+    def getText(self):
+        filename, okPressed = QInputDialog.getText(self, "Save file","Input file name:", QLineEdit.Normal, "particle.txt")
+        if (okPressed) and (filename != '.txt') and ('.txt' in filename):
+            return filename
+        else:
+            filename = 'error'
+            return filename
+            
+            
+    def errorSave(self):
+        self.setWindowTitle(self.title)
+        okButton = QMessageBox.warning(self, 'error', "Your file did not save because the file was in the wrong format.\nThe proper format is \"filename.txt\"")
+    def errorLoad(self):
+        self.setWindowTitle(self.title)
+        okButton = QMessageBox.warning(self, 'error', "Your file could not be opened because the file you requested could not be found.")
+        
+            
+    def paintEvent(self,event):
+        
+        # Create the lines in the graph for visual effects
+        qp = QPainter(self)
+        qp.setPen(Qt.black)
+        size = self.size()
+        
+        for i in range(580):
+            qp.drawPoint(580,i)
+            qp.drawPoint(290,i)
+            qp.drawPoint(i,122)
+            qp.drawPoint(i,272)
+
+        
+            
+# Main is called from the start of the program with the GUI
+
+def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim):
+    """Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,m2,m3,m4,a,b,c,d,x,v  Xmin,Xmax,Ymin,Ymax,Zmin,Zmax"""
+
+    t = 0
+    R = np.zeros((4,3))
+    
+    # Graphing initalizations for the 3-d graphs
+    fig = plt.figure()
+    ax = p3.Axes3D(fig)
+    
+    # Setting the axes properties
+    ax.set_xlim3d([dim[1,0],dim[0,0]])
+    ax.set_xlabel('X')
+
+    ax.set_ylim3d([dim[1,1],dim[0,1]])
+    ax.set_ylabel('Y')
+
+    ax.set_zlim3d([dim[1,2],dim[0,2])
+    ax.set_zlabel('Z')
+
+    ax.set_title('Particle Motion')
+    
+    
+    # Looping through from t=0 to t=TotalTime to run the simulation.
+    while t < TotalTime:
+        # Half time step to help the simulation be more stable due to part of the simulation using the centerpoint rule.
+        t += dt/2
+        
+        R = Dist(R,pos)
+        
+        # Calculating the Total E and B fields in x,y,z at each particle then passing the E,B fields back at each particle
+        E,B = Fields(R,E0,B0,pos,vel,q,a,b,c,d,t)
+        # Calculate the Force on each particle based on the E,B fields at those particles
+        F = Forces(E,B,vel,q)
+        # Stepping the position of each particle forward and changing the velocity based on the force
+        pos,vel = Move(pos,vel,F,m,dt)
+        
+        t += dt/2
+        # Prints the new particle positions to the screen
+        Draw(pos)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
+   
