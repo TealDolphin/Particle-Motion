@@ -5,7 +5,10 @@ import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
 import matplotlib.animation as anime
 
-def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,m2,m3,m4,a,b,c,d,x,v  Xmin,Xmax,Ymin,Ymax,Zmin,Zmax"""):
+# Main is called from the 
+
+def Main(E0,B0,pos,vel,q,m,TT,dt,a,b,c,d,,dim):
+"""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,m2,m3,m4,a,b,c,d,x,v  Xmin,Xmax,Ymin,Ymax,Zmin,Zmax"""
     
     #Temporary declarations for testing purposes
     dt =  0.01
@@ -32,13 +35,13 @@ def Main("""Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,
     ax = p3.Axes3D(fig)
     
     # Setting the axes properties
-    ax.set_xlim3d([Xmin,Xmax])
+    ax.set_xlim3d([dim[1,0],dim[0,0]])
     ax.set_xlabel('X')
 
-    ax.set_ylim3d([Ymin,Ymax])
+    ax.set_ylim3d([dim[1,1],dim[0,1]])
     ax.set_ylabel('Y')
 
-    ax.set_zlim3d([Zmin,Zmax])
+    ax.set_zlim3d([dim[1,2],dim[0,2])
     ax.set_zlabel('Z')
 
     ax.set_title('Particle Motion')
