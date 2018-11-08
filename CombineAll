@@ -1,10 +1,13 @@
 """
-First attempt at assembling the program and running it for my final project.
+This is a complete program, I will go through and clean up some of the comments and some of the extraneous code later for final submition,
+    but every individual part of the code seems to be working as of now.
+    11/8/2018
+I also want to include a section in the GUI for the plt.pause to allow the user to define a pause duration or if they want no pause duration for graphing.
 """
 # import section of the code, everything but PyQt5 is already in python by default
 import sys
 import numpy as np
-from math import exp,sqrt,log,cos,sin,tan
+from math import pi,exp,sqrt,log,cos,sin,tan
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter
@@ -13,13 +16,7 @@ from PyQt5.QtWidgets import QMessageBox, QLabel, QApplication, QWidget, QPushBut
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
 
-
-
-
-
-
 class App(QWidget):
-    
     def __init__(self):
         super().__init__()
         self.title = 'Particle Motion Simulator'
@@ -345,7 +342,6 @@ class App(QWidget):
         self.lp4m.move(430,395)
         
         # Graph dimentions GUI section
-        
         self.tXmax = QLineEdit(self)
         self.tXmax.move(630,30)
         self.tXmax.resize(100,20)
@@ -381,36 +377,29 @@ class App(QWidget):
         self.tZmin.resize(100,20)
         self.lZmin = QLabel('Zmin',self)
         self.lZmin.move(600,185)
-        """
-        # Add paint widget and paint
-        self.m = PaintWidget(self)
-        self.m.move(0,0)
-        self.m.resize(self.width,self.height)
-        """
         
-        self.show()
+        self.show() # Show the GUI to the screen
         
 
     # The button that calls main() and runs the program
     def on_click(self):
-        print('call main')
-        
         # matrix declarations for the variables to pass into the main function.
-        E0 = np.zeros(3)
-        B0 = np.zeros(3)
+        E0 = np.chararray(3,unicode=True)
+        B0 = np.chararray(3,unicode=True)
         q = np.zeros(4)
         mass = np.zeros(4)
         pos = np.zeros((4,3))
         vel = np.zeros((4,3))
         dim = np.zeros((2,3))
-        
         # Section to pass all the info in the text boxes into variables.
-        E0[0] = str(self.tEx.text())  #self.tEx.text()
-        E0[1] = str(self.tEy.text())
-        E0[2] = str(self.tEz.text())
-        B0[0] = str(self.tBx.text())
-        B0[1] = str(self.tBy.text())
-        B0[2] = str(self.tBz.text())
+        #temp = "{}".format(self.tEx.text())    #self.tEx.text()
+        #print(temp)
+        E0[0] = self.tEx.text()
+        E0[1] = self.tEy.text()
+        E0[2] = self.tEz.text()
+        B0[0] = self.tBx.text()
+        B0[1] = self.tBy.text()
+        B0[2] = self.tBz.text()
         pos[0,0] = float(self.tp1x.text())
         pos[0,1] = float(self.tp1y.text())
         pos[0,2] = float(self.tp1z.text())
@@ -456,16 +445,17 @@ class App(QWidget):
         dim[1,1] = float(self.tYmax.text())
         dim[1,2] = float(self.tZmax.text())
         
+        #print(type(temp),E0,temp)
+        
         # Calling the main function with the variables in the text boxes
-        main(E0,B0,pos,vel,q,mass,a,b,c,d,TotalTime,dt,dim)
+        Main(E0,B0,pos,vel,q,mass,a,b,c,d,TotalTime,dt,dim)
 
     # Button to load values into the text boxes from a file
     def on_click0(self):
-        print('load')
-    
         saveList = []
-        
         filename = self.getText()
+        
+        # Loads the file to the GUI
         if filename != 'error':
             File = open(filename, 'r')
             for line in File:
@@ -531,7 +521,6 @@ class App(QWidget):
         
     # Button to save values to a file for use later
     def on_click1(self):
-        print('save')
         saveList = ["" for i in range(50)]
         
         saveList[0] = str(self.tEx.text()) + " \n"
@@ -587,7 +576,7 @@ class App(QWidget):
         
         filename = self.getText()
         
-        # Uses the built in pickle to save the file
+        # Saves the file
         File = open(filename, 'w')
         if filename != 'error':
             for i in range(50):
@@ -608,14 +597,12 @@ class App(QWidget):
             
     def errorSave(self):
         self.setWindowTitle(self.title)
-        okButton = QMessageBox.warning(self, 'error', "Your file did not save because the file was in the wrong format.\nThe proper format is \"filename.txt\"")
+        QMessageBox.warning(self, 'error', "Your file did not save because the file was in the wrong format.\nThe proper format is \"filename.txt\"")
     def errorLoad(self):
         self.setWindowTitle(self.title)
-        okButton = QMessageBox.warning(self, 'error', "Your file could not be opened because the file you requested could not be found.")
+        QMessageBox.warning(self, 'error', "Your file could not be opened because the file you requested could not be found.")
         
-            
     def paintEvent(self,event):
-        
         # Create the lines in the graph for visual effects
         qp = QPainter(self)
         qp.setPen(Qt.black)
@@ -628,9 +615,7 @@ class App(QWidget):
             qp.drawPoint(i,272)
 
         
-            
 # Main is called from the start of the program with the GUI
-
 def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim):
     """Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,m2,m3,m4,a,b,c,d,x,v  Xmin,Xmax,Ymin,Ymax,Zmin,Zmax"""
 
@@ -660,17 +645,31 @@ def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim):
         t += dt/2
         
         R = Dist(R,pos)
+        posInital = pos.copy()
         
+        #print(E0,"\n\n",q,"\n\n",pos,"\n\n",R)
+        #print(posInital,"\n\n",pos)
         # Calculating the Total E and B fields in x,y,z at each particle then passing the E,B fields back at each particle
         E,B = Fields(R,E0,B0,pos,vel,q,a,b,c,d,t)
+        
+        #print(E,"\n\n",B,"\n")
+        
         # Calculate the Force on each particle based on the E,B fields at those particles
         F = Forces(E,B,vel,q)
+        
+        #print(F)
+        
         # Stepping the position of each particle forward and changing the velocity based on the force
         pos,vel = Move(pos,vel,F,m,dt)
         
         t += dt/2
         # Prints the new particle positions to the screen
-        Draw(pos)
+        #print(posInital,"\n\n",pos)
+        """ for j in range(4):
+            ax.plot([posInital[j,0],pos[j,0]],[posInital[j,1],pos[j,1]],[posInital[j,2],pos[j,2]]) 
+            ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True)
+        """
+        Draw(pos,posInital,t,ax)
     
     
     
@@ -687,6 +686,10 @@ def Fields(R,E0,B0,pos,vel,q,a,b,c,d,t):
     e0 = 8.854*10**(-12) # Epsilon naught in [N][m]^2[C]^-2
     u0 = 4*pi*10**(-7)   # Vaccum Magnetic permitivity constant in [N][s]^2[C]^-2
     
+    # Declaring the matricies that will hold the total E and B fields
+    E = np.zeros((4,3))
+    B = np.zeros((4,3))
+    
     for i in range(3):
         for j in range(4):
             
@@ -694,29 +697,20 @@ def Fields(R,E0,B0,pos,vel,q,a,b,c,d,t):
             x = pos[j,0]
             y = pos[j,1]
             z = pos[j,2]
-            
-            
+
             # Total Electric field as calculated by the external electric field and the position of the other charges.
-            """
-            E = evaluate(external field at the particle j) + 1/4pi*e0 * each particle: q*Rvector/Rmag**3 
-            """
-            
-            E[j,i] = eval(E0[i]) + (1/(4*pi*e0))*(q[j-1]*(pos[i,j] - pos[i,j-1])/(R[j,0]**3))
-                + q[j-2]*(pos[i,j] - pos[i,j-2])/(R[j,1]**3))
-                + q[j-3]*(pos[i,j] - pos[i,j-3])/(R[j,2]**3))
-            
-            
+            """ E = evaluate(external field at the particle j) + 1/4pi*e0 * each particle: q*Rvector/Rmag**3 """
+            E[j,i] = eval(E0[i])
+            E[j,i] = E[j,i] + (1/(4*pi*e0))*(q[j-1]*((pos[j,i] - pos[j-1,i])/(R[j,0]**3)))
+            E[j,i] = E[j,i] + (1/(4*pi*e0))*(q[j-2]*((pos[j,i] - pos[j-2,i])/(R[j,1]**3))) 
+            E[j,i] = E[j,i] + (1/(4*pi*e0))*(q[j-3]*((pos[j,i] - pos[j-3,i])/(R[j,2]**3)))
             # Total Magnetic field in a Cartesian direction.
-            """
-            B = evaluate(external field at the particle j) + u0/4pi * each particle: =\/
+            """ B = evaluate(external field at the particle j) + u0/4pi * each particle: =\/
             Each moving particle generates an electric field, x case is shown below. Remember that there are three particles that need to be considered.
-            [for x case each term affected by the constants is (Vel in y)*(z offset) - (Vel in z)*(y offset)]
-            """
-            
-            B[j,i] = eval(B0[i]) + (u0/(4*pi))*((q[j-1]*(vel[i-2,j-1]*(pos[i-1,j]-pos[i-1,j-1]) - vel[i-1,j-1]*(pos[i-2,j]-pos[i-1,j-1]))/(R[j,0]**3)) 
-                + (q[j-2]*(vel[i-2,j-2]*(pos[i-1,j]-pos[i-1,j-2]) - vel[i-1,j-2]*(pos[i-2,j]-pos[i-1,j-2]))/(R[j,1]**3))
-                + (q[j-3]*(vel[i-2,j-3]*(pos[i-1,j]-pos[i-1,j-3]) - vel[i-1,j-3]*(pos[i-2,j]-pos[i-1,j-3]))/(R[j,2]**3)))
-    
+            [for x case each term affected by the constants is (Vel in y)*(z offset) - (Vel in z)*(y offset)] """ 
+            B[j,i] = eval(B0[i]) + (u0/(4*pi))*((q[j-1]*(vel[j-1,i-2]*(pos[j,i-1]-pos[j-1,i-1]) - vel[j-1,i-1]*(pos[j,i-2]-pos[j-1,i-1]))/(R[j,0]**3)) 
+                + (q[j-2]*(vel[j-2,i-2]*(pos[j,i-1]-pos[j-2,i-1]) - vel[j-2,i-1]*(pos[j,i-2]-pos[j-2,i-1]))/(R[j,1]**3))
+                + (q[j-3]*(vel[j-3,i-2]*(pos[j,i-1]-pos[j-3,i-1]) - vel[j-3,i-1]*(pos[j,i-2]-pos[j-3,i-1]))/(R[j,2]**3)))        
     return E,B
     
     
@@ -724,6 +718,7 @@ def Forces(E,B,vel,q):
     F = np.zeros((4,3))
     for i in range(3):
         for j in range(4):
+            # Calculating the combined force from the Electric and Magnetic fields
             F[j,i] = q[j]*(E[j,i] + (vel[j,i-2]*B[j,i-1] - vel[j,i-1]*B[j,i-2]))
     return F
     
@@ -732,35 +727,23 @@ def Move(pos,vel,F,m,dt):
     vol = [0,0,0,0]
     
     for i in range(3):
-        vol[:] = vel[:,i] # making vol hold all of the information for one dimention and all the particles.
-        
+        # Making vol hold all of the information for one dimention and all the particles to step the position forward by the midpoint of velocity
+        vol[:] = vel[:,i]
         for j in range(4):
             vel[j,i] = vel[j,i] + dt*(F[j,i]/m[j])         # Stepping the velocity of the particle j forward by dt
             pos[j,i] = pos[j,i] + dt*(vel[j,i]+vol[j])/2   # Stepping the position of the particle j forward by dt using the midpoint of the velocity
-        
     return pos,vel
     
-    
-def Draw(pos,tDraw)
+
+def Draw(pos,posInital,tDraw,ax):
     for j in range(4):
-        ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True);
-        plt.gcf().clear()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        ax.plot([posInital[j,0],pos[j,0]],[posInital[j,1],pos[j,1]],[posInital[j,2],pos[j,2]],'b') 
+        pts = ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True)
+        #plt.pause(0.0000000000000001)
+        pts.remove()
+
+        
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
     sys.exit(app.exec_())
-   
