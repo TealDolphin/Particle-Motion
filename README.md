@@ -1,5 +1,7 @@
 # Particle-Motion
-# Version 0.0.4 of my Particle motion program
+# Version 0.1.1 of my Particle motion program 
+
+"""(Once I get home and update the combined function due to minor changes, also I will update all the individual parts and I will simplify a few comments down and put a couple of simple .txt files that give a simple Hydrogen and two Hydrogen atoms.)"""
     """
     This program passes info about four particles and an external Electric and Magnetic field into it from a GUI
     This program then calculates how the particles travel due to the Electric and Magnetic fields and due to interacting
