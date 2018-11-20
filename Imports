@@ -1,1 +1,11 @@
+# import section of the code, everything but PyQt5 is already in python by default
+import sys
+import numpy as np
+from math import pi,exp,sqrt,log,cos,sin,tan
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter
+from PyQt5.QtWidgets import QMessageBox, QLabel, QApplication, QWidget, QPushButton, QLineEdit, QInputDialog
+
+import matplotlib.pyplot as plt
+import mpl_toolkits.mplot3d.axes3d as p3
