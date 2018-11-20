@@ -1,4 +1,8 @@
-def Draw(pos,tDraw)
+# This does all the drawing of the points and lines to the screen. It might be able to be optimised but it works as is so I'm just going to leave it for now.
+def Draw(pos,posInital,tDraw,ax,PP):
     for j in range(4):
-        ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True);
-        plt.gcf().clear()
+        ax.plot([posInital[j,0],pos[j,0]],[posInital[j,1],pos[j,1]],[posInital[j,2],pos[j,2]],'b') 
+        pts = ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True)
+        if PP != 0:
+            plt.pause(PP)
+        pts.remove()
