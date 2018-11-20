@@ -1,8 +1,7 @@
 """
-This is a complete program, I will go through and clean up some of the comments and some of the extraneous code later for final submition,
+This is a complete program, I will optimise some of the extraneous code later for final submition,
     but every individual part of the code seems to be working as of now.
-    11/8/2018
-I also want to include a section in the GUI for the plt.pause to allow the user to define a pause duration or if they want no pause duration for graphing.
+    11/20/2018
 """
 # import section of the code, everything but PyQt5 is already in python by default
 import sys
@@ -16,6 +15,7 @@ from PyQt5.QtWidgets import QMessageBox, QLabel, QApplication, QWidget, QPushBut
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
 
+# This section is exclusively deticated to making the GUI for this particle motion program
 class App(QWidget):
     def __init__(self):
         super().__init__()
@@ -49,7 +49,7 @@ class App(QWidget):
         bSave.clicked.connect(self.on_click1)
         
         
-        # Just label section
+        # For making the GUI section labels
         self.lF = QLabel('Fields',self)
         self.lF.move(40,10)
         
@@ -378,6 +378,13 @@ class App(QWidget):
         self.lZmin = QLabel('Zmin',self)
         self.lZmin.move(600,185)
         
+        # How long do you want the plot to pause inbetween ploting points?
+        self.tPP = QLineEdit(self)
+        self.tPP.move(630,240)
+        self.tPP.resize(100,20)
+        self.lPP = QLabel('Pause Time',self)
+        self.lPP.move(600,215)
+        
         self.show() # Show the GUI to the screen
         
 
@@ -392,8 +399,6 @@ class App(QWidget):
         vel = np.zeros((4,3))
         dim = np.zeros((2,3))
         # Section to pass all the info in the text boxes into variables.
-        #temp = "{}".format(self.tEx.text())    #self.tEx.text()
-        #print(temp)
         E0[0] = self.tEx.text()
         E0[1] = self.tEy.text()
         E0[2] = self.tEz.text()
@@ -444,11 +449,17 @@ class App(QWidget):
         dim[1,0] = float(self.tXmax.text())
         dim[1,1] = float(self.tYmax.text())
         dim[1,2] = float(self.tZmax.text())
+        PP = float(self.tPP.text())
         
-        #print(type(temp),E0,temp)
-        
-        # Calling the main function with the variables in the text boxes
-        Main(E0,B0,pos,vel,q,mass,a,b,c,d,TotalTime,dt,dim)
+        # Quick if statement to help avoid some of the errors and computer breaking issues that can come with eval()
+        if ("_" in E0) or ("eval" in E0) or ("_" in B0) or ("eval" in B0):
+            self.errorEval()
+        else:
+            if PP < 0:
+                self.errorPP()
+            else:
+                # Calling the main function with the variables in the text boxes
+                Main(E0,B0,pos,vel,q,mass,a,b,c,d,TotalTime,dt,dim,PP)
 
     # Button to load values into the text boxes from a file
     def on_click0(self):
@@ -460,12 +471,14 @@ class App(QWidget):
             File = open(filename, 'r')
             for line in File:
                 saveList.append(line)
+                saveList.replace(" ","")
             File.close()
         else:
             self.errorLoad()
-            for i in range(50):
+            for i in range(51):
                 saveList[i] = ""
         
+        # This list is taken directly from the text file and puts the values of each variable prevously saved into the propper text box.
         saveList = np.array(saveList,dtype=str)
         
         self.tEx.setText(saveList[0])
@@ -517,12 +530,14 @@ class App(QWidget):
         self.tZmin.setText(saveList[46])
         self.tXmax.setText(saveList[47])
         self.tYmax.setText(saveList[48])
-        self.tZmax.setText(saveList[49])        
+        self.tZmax.setText(saveList[49])
+        self.tPP.setText(saveList[50])
         
     # Button to save values to a file for use later
     def on_click1(self):
-        saveList = ["" for i in range(50)]
+        saveList = ["" for i in range(51)]
         
+        # Takes the values from the text boxes in the GUI and saves them each in a seperate line in the .txt file
         saveList[0] = str(self.tEx.text()) + " \n"
         saveList[1] = str(self.tEy.text()) + " \n"
         saveList[2] = str(self.tEz.text()) + " \n"
@@ -573,13 +588,14 @@ class App(QWidget):
         saveList[47] = str(self.tXmax.text()) + " \n"
         saveList[48] = str(self.tYmax.text()) + " \n"
         saveList[49] = str(self.tZmax.text()) + " \n"
+        saveList[50] = str(self.tPP.text()) + "\n"
         
         filename = self.getText()
         
         # Saves the file
         File = open(filename, 'w')
         if filename != 'error':
-            for i in range(50):
+            for i in range(51):
                 File.write(str(saveList[i]))
             File.close()
         else:
@@ -594,16 +610,22 @@ class App(QWidget):
             filename = 'error'
             return filename
             
-            
+    # For when things go wrong.
     def errorSave(self):
         self.setWindowTitle(self.title)
         QMessageBox.warning(self, 'error', "Your file did not save because the file was in the wrong format.\nThe proper format is \"filename.txt\"")
     def errorLoad(self):
         self.setWindowTitle(self.title)
         QMessageBox.warning(self, 'error', "Your file could not be opened because the file you requested could not be found.")
+    def errorPP(self):
+        QMessageBox.warning(self,'error',"You can only pause the plot for positive time.")
+    def errorEval(self):
+        QMessageBox.warning(self,'error',"Please just put an equation in the textbox.\nThis is so you don't break your computer.")
+        
+        
         
     def paintEvent(self,event):
-        # Create the lines in the graph for visual effects
+        # Create the lines in the GUI for visual effects
         qp = QPainter(self)
         qp.setPen(Qt.black)
         size = self.size()
@@ -616,8 +638,7 @@ class App(QWidget):
 
         
 # Main is called from the start of the program with the GUI
-def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim):
-    """Inputs from the Gui: TotalTime,dt  Ex,Ey,Ez,Bx,By,Bz,q1,q2,q3,q4,m1,m2,m3,m4,a,b,c,d,x,v  Xmin,Xmax,Ymin,Ymax,Zmin,Zmax"""
+def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim,PP):
 
     t = 0
     R = np.zeros((4,3))
@@ -645,32 +666,20 @@ def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim):
         t += dt/2
         
         R = Dist(R,pos)
-        posInital = pos.copy()
+        posInital = pos.copy() #The .copy() is required because otherwise python just copies the pointer and not the values so when it calls posInital after changing pos it would call the same
         
-        #print(E0,"\n\n",q,"\n\n",pos,"\n\n",R)
-        #print(posInital,"\n\n",pos)
         # Calculating the Total E and B fields in x,y,z at each particle then passing the E,B fields back at each particle
         E,B = Fields(R,E0,B0,pos,vel,q,a,b,c,d,t)
         
-        #print(E,"\n\n",B,"\n")
-        
         # Calculate the Force on each particle based on the E,B fields at those particles
         F = Forces(E,B,vel,q)
-        
-        #print(F)
         
         # Stepping the position of each particle forward and changing the velocity based on the force
         pos,vel = Move(pos,vel,F,m,dt)
         
         t += dt/2
         # Prints the new particle positions to the screen
-        #print(posInital,"\n\n",pos)
-        """ for j in range(4):
-            ax.plot([posInital[j,0],pos[j,0]],[posInital[j,1],pos[j,1]],[posInital[j,2],pos[j,2]]) 
-            ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True)
-        """
-        Draw(pos,posInital,t,ax)
-    
+        Draw(pos,posInital,t,ax,PP)
     
     
     # This is the complete call of the Dist() function, I am just parcing as much as I can for both troubleshooting and readability.
@@ -704,7 +713,7 @@ def Fields(R,E0,B0,pos,vel,q,a,b,c,d,t):
             E[j,i] = E[j,i] + (1/(4*pi*e0))*(q[j-1]*((pos[j,i] - pos[j-1,i])/(R[j,0]**3)))
             E[j,i] = E[j,i] + (1/(4*pi*e0))*(q[j-2]*((pos[j,i] - pos[j-2,i])/(R[j,1]**3))) 
             E[j,i] = E[j,i] + (1/(4*pi*e0))*(q[j-3]*((pos[j,i] - pos[j-3,i])/(R[j,2]**3)))
-            # Total Magnetic field in a Cartesian direction.
+            # Total Magnetic field in Cartesian directions
             """ B = evaluate(external field at the particle j) + u0/4pi * each particle: =\/
             Each moving particle generates an electric field, x case is shown below. Remember that there are three particles that need to be considered.
             [for x case each term affected by the constants is (Vel in y)*(z offset) - (Vel in z)*(y offset)] """ 
@@ -713,7 +722,7 @@ def Fields(R,E0,B0,pos,vel,q,a,b,c,d,t):
                 + (q[j-3]*(vel[j-3,i-2]*(pos[j,i-1]-pos[j-3,i-1]) - vel[j-3,i-1]*(pos[j,i-2]-pos[j-3,i-1]))/(R[j,2]**3)))        
     return E,B
     
-    
+# Calculate the forces on each particle.
 def Forces(E,B,vel,q):
     F = np.zeros((4,3))
     for i in range(3):
@@ -722,10 +731,9 @@ def Forces(E,B,vel,q):
             F[j,i] = q[j]*(E[j,i] + (vel[j,i-2]*B[j,i-1] - vel[j,i-1]*B[j,i-2]))
     return F
     
-    
+# Calculate how far each particle moves and in what direction every time a dt has passed.
 def Move(pos,vel,F,m,dt):
     vol = [0,0,0,0]
-    
     for i in range(3):
         # Making vol hold all of the information for one dimention and all the particles to step the position forward by the midpoint of velocity
         vol[:] = vel[:,i]
@@ -734,12 +742,13 @@ def Move(pos,vel,F,m,dt):
             pos[j,i] = pos[j,i] + dt*(vel[j,i]+vol[j])/2   # Stepping the position of the particle j forward by dt using the midpoint of the velocity
     return pos,vel
     
-
-def Draw(pos,posInital,tDraw,ax):
+# This does all the drawing of the points and lines to the screen. It might be able to be optimised but it works as is so I'm just going to leave it for now.
+def Draw(pos,posInital,tDraw,ax,PP):
     for j in range(4):
         ax.plot([posInital[j,0],pos[j,0]],[posInital[j,1],pos[j,1]],[posInital[j,2],pos[j,2]],'b') 
         pts = ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True)
-        #plt.pause(0.0000000000000001)
+        if PP != 0:
+            plt.pause(PP)
         pts.remove()
 
         
