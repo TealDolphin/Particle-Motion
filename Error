@@ -1,0 +1,11 @@
+    # For when things go wrong.
+    def errorSave(self):
+        self.setWindowTitle(self.title)
+        QMessageBox.warning(self, 'error', "Your file did not save because the file was in the wrong format.\nThe proper format is \"filename.txt\"")
+    def errorLoad(self):
+        self.setWindowTitle(self.title)
+        QMessageBox.warning(self, 'error', "Your file could not be opened because the file you requested could not be found.")
+    def errorPP(self):
+        QMessageBox.warning(self,'error',"You can only pause the plot for positive time.")
+    def errorEval(self):
+        QMessageBox.warning(self,'error',"Please just put an equation in the textbox.\nThis is so you don't break your computer.")
