@@ -1,11 +1,10 @@
-Move(pos,vel,F,m,dt):
+# Calculate how far each particle moves and in what direction every time a dt has passed.
+def Move(pos,vel,F,m,dt):
     vol = [0,0,0,0]
-    
     for i in range(3):
-        vol[:] = vel[:,i] # making vol hold all of the information for one dimention and all the particles.
-        
+        # Making vol hold all of the information for one dimention and all the particles to step the position forward by the midpoint of velocity
+        vol[:] = vel[:,i]
         for j in range(4):
             vel[j,i] = vel[j,i] + dt*(F[j,i]/m[j])         # Stepping the velocity of the particle j forward by dt
             pos[j,i] = pos[j,i] + dt*(vel[j,i]+vol[j])/2   # Stepping the position of the particle j forward by dt using the midpoint of the velocity
-        
     return pos,vel
