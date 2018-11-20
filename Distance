@@ -1,7 +1,7 @@
 # This is the complete call of the Dist() function, I am just parcing as much as I can for both troubleshooting and readability.
 def Dist(R,pos):
     for j in range(4):
-        R[j,0] = sqrt((pos[j,0]-pos[j-1,0])**2+(pos[j,1]-pos[j-1,1])**2+(pos[j,2]-pos[j-1,2])**2)# distance between particle j and particle j-1
-        R[j,1] = sqrt((pos[j,0]-pos[j-2,0])**2+(pos[j,1]-pos[j-2,1])**2+(pos[j,2]-pos[j-2,2])**2)# distance between particle j and particle j-2
-        R[j,2] = sqrt((pos[j,0]-pos[j-3,0])**2+(pos[j,1]-pos[j-3,1])**2+(pos[j,2]-pos[j-3,2])**2)# distance between particle j and particle j-3
+        R[j,0] = sqrt((pos[j,0]-pos[j-1,0])**2+(pos[j,1]-pos[j-1,1])**2+(pos[j,2]-pos[j-1,2])**2) # distance between particle j and particle j-1
+        R[j,1] = sqrt((pos[j,0]-pos[j-2,0])**2+(pos[j,1]-pos[j-2,1])**2+(pos[j,2]-pos[j-2,2])**2) # distance between particle j and particle j-2
+        R[j,2] = sqrt((pos[j,0]-pos[j-3,0])**2+(pos[j,1]-pos[j-3,1])**2+(pos[j,2]-pos[j-3,2])**2) # distance between particle j and particle j-3
     return R
