@@ -1,6 +1,8 @@
+# Calculate the forces on each particle.
 def Forces(E,B,vel,q):
     F = np.zeros((4,3))
     for i in range(3):
         for j in range(4):
+            # Calculating the combined force from the Electric and Magnetic fields
             F[j,i] = q[j]*(E[j,i] + (vel[j,i-2]*B[j,i-1] - vel[j,i-1]*B[j,i-2]))
     return F
