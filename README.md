@@ -31,3 +31,4 @@
     p stands for particle here.
     """
     """  The bondlengths ranges from the shortest of 74 pm for H-H, 74 pm = 7.4e-11 m.  """
+    # http://www.science.uwaterloo.ca/~cchieh/cact/c120/bondel.html 
