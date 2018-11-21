@@ -1,6 +1,10 @@
 # Particle-Motion
 # Version 1.0.2 of my Particle motion program 
 
+    # You will need to download PYQT5 to get this progam to run as this is what I have used to create the GUI
+    # You can find it here: https://sourceforge.net/projects/pyqt/
+    
+    """
     This program passes info about four particles and an external Electric and Magnetic field into it from a GUI
     This program then calculates how the particles travel due to the Electric and Magnetic fields and due to interacting
         with each other over a time from t=0 to t=TotalTime.
