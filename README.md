@@ -23,6 +23,12 @@
         could look more into making the Relativistic calculations an option in the program as that is also quite different
         than the way the program is coded now.
     => Look up 'Relativistic Electromagnetic Potential"
+    => There is a relativistic E' and B' that is given from one reference frame to another that could be used for relativistic
+        potentials and allow for very high speed equations. This would most likely just add another function that would translate
+        the electric and magnetic fields from frame one into frame two. Then running the forces from there.
+    
+    
+    
     """
     """
     pos is 3x4 matrix of position
