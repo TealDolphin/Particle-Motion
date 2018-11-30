@@ -4,6 +4,14 @@
     # You will need to download PYQT5 to get this progam to run as this is what I have used to create the GUI
     # You can find it here: https://sourceforge.net/projects/pyqt/
     
+    """This program is once again not up to date. I need to update it and it will advance to V 1.1.0 as I put a
+          skip on how often it plots to the graph because when I ran the program before it would consume all 
+          the RAM in my computer without allowing me to use a long total time. It does not change how the particles
+          behave because the time step does not change but it massively reduces the RAM requirements because I can
+          reduce the number of lines on matplotlib by about 100x compared to the time step."""
+          
+    # I'm looking to add in gravity because I already have the masses in it and it will be more accurate for almost no more work.
+    
     """
     This program passes info about four particles and an external Electric and Magnetic field into it from a GUI
     This program then calculates how the particles travel due to the Electric and Magnetic fields and due to interacting
