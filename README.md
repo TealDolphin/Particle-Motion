@@ -62,3 +62,32 @@
     # http://www.science.uwaterloo.ca/~cchieh/cact/c120/bondel.html 
     # Bond distance for edge on and face on, stationary. Then futher apart with motion?
     # or rather both moving at a little further apart with a long term time scale to see effects
+
+
+import numpy as np
+
+saveList = np.chararray(4)
+
+filename = "save"
+
+saveList = np.array(saveList,dtype=str)
+
+saveList[0] = "a"
+saveList[1] = "b"
+saveList[2] = "c"
+saveList[3] = "42"
+
+
+
+"""
+File = open(filename, 'w')
+File.write(saveList)
+File.close()
+
+"""
+
+#np.save(filename,saveList)
+filename += ".npy"
+j = np.load(filename)
+
+print(j)
