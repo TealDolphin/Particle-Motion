@@ -1,17 +1,10 @@
 # Particle-Motion
-# Version 1.0.2 of my Particle motion program 
+# Version 1.1.0 of my Particle motion program 
 
     # You will need to download PYQT5 to get this progam to run as this is what I have used to create the GUI
     # You can find it here: https://sourceforge.net/projects/pyqt/
-    
-    """This program is once again not up to date. I need to update it and it will advance to V 1.1.0 as I put a
-          skip on how often it plots to the graph because when I ran the program before it would consume all 
-          the RAM in my computer without allowing me to use a long total time. It does not change how the particles
-          behave because the time step does not change but it massively reduces the RAM requirements because I can
-          reduce the number of lines on matplotlib by about 100x compared to the time step."""
           
     # I'm looking to add in gravity because I already have the masses in it and it will be more accurate for almost no more work.
-    
     """
     This program passes info about four particles and an external Electric and Magnetic field into it from a GUI
     This program then calculates how the particles travel due to the Electric and Magnetic fields and due to interacting
@@ -26,9 +19,6 @@
     => There is a relativistic E' and B' that is given from one reference frame to another that could be used for relativistic
         potentials and allow for very high speed equations. This would most likely just add another function that would translate
         the electric and magnetic fields from frame one into frame two. Then running the forces from there.
-    
-    
-    
     """
     """
     pos is 3x4 matrix of position
@@ -51,43 +41,10 @@
     frames = np.zeros(steps)???? .arange?
     pass ax.plot to frames then outside compile frames with matplotlib animation function
     
-    
     <drop box>
     -------------
     save as movie
     show plot to screen
-    
-    
+    https://pythonprogramming.net/drop-down-button-window-styles-pyqt-tutorial/
     
     # http://www.science.uwaterloo.ca/~cchieh/cact/c120/bondel.html 
-    # Bond distance for edge on and face on, stationary. Then futher apart with motion?
-    # or rather both moving at a little further apart with a long term time scale to see effects
-
-
-import numpy as np
-
-saveList = np.chararray(4)
-
-filename = "save"
-
-saveList = np.array(saveList,dtype=str)
-
-saveList[0] = "a"
-saveList[1] = "b"
-saveList[2] = "c"
-saveList[3] = "42"
-
-
-
-"""
-File = open(filename, 'w')
-File.write(saveList)
-File.close()
-
-"""
-
-#np.save(filename,saveList)
-filename += ".npy"
-j = np.load(filename)
-
-print(j)
