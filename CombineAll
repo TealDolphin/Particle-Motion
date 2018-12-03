@@ -1,7 +1,6 @@
 """
 This is a complete program, I will optimise some of the extraneous code later for final submition,
-    but every individual part of the code seems to be working as of now.
-    11/20/2018
+    but every individual part of the code seems to be working as of now. 11/21/2018
 """
 # import section of the code, everything but PyQt5 is already in python by default
 import sys
@@ -47,7 +46,6 @@ class App(QWidget):
         bSave.setToolTip('Save variables to a file to use later.')
         bSave.move(self.width-92,self.height-65) 
         bSave.clicked.connect(self.on_click1)
-        
         
         # For making the GUI section labels
         self.lF = QLabel('Fields',self)
@@ -382,8 +380,15 @@ class App(QWidget):
         self.tPP = QLineEdit(self)
         self.tPP.move(630,240)
         self.tPP.resize(100,20)
-        self.lPP = QLabel('Pause Time',self)
+        self.lPP = QLabel('Pause Time:',self)
         self.lPP.move(600,215)
+        
+        # Only graph every {Skip} calculations
+        self.tSkip = QLineEdit(self)
+        self.tSkip.move(630,300)
+        self.tSkip.resize(100,20)
+        self.lSkip = QLabel('Plot Every:',self)
+        self.lSkip.move(600,275)
         
         self.show() # Show the GUI to the screen
         
@@ -450,6 +455,7 @@ class App(QWidget):
         dim[1,1] = float(self.tYmax.text())
         dim[1,2] = float(self.tZmax.text())
         PP = float(self.tPP.text())
+        Skip = float(self.tSkip.text())
         
         # Quick if statement to help avoid some of the errors and computer breaking issues that can come with eval()
         if ("_" in E0) or ("eval" in E0) or ("_" in B0) or ("eval" in B0):
@@ -459,7 +465,7 @@ class App(QWidget):
                 self.errorPP()
             else:
                 # Calling the main function with the variables in the text boxes
-                Main(E0,B0,pos,vel,q,mass,a,b,c,d,TotalTime,dt,dim,PP)
+                Main(E0,B0,pos,vel,q,mass,a,b,c,d,TotalTime,dt,dim,PP,Skip)
 
     # Button to load values into the text boxes from a file
     def on_click0(self):
@@ -471,16 +477,15 @@ class App(QWidget):
             File = open(filename, 'r')
             for line in File:
                 saveList.append(line)
-                saveList.replace(" ","")
             File.close()
         else:
             self.errorLoad()
-            for i in range(51):
-                saveList[i] = ""
+            for i in range(52):
+                saveList.append("")
         
         # This list is taken directly from the text file and puts the values of each variable prevously saved into the propper text box.
         saveList = np.array(saveList,dtype=str)
-        
+
         self.tEx.setText(saveList[0])
         self.tEy.setText(saveList[1])
         self.tEz.setText(saveList[2])
@@ -532,78 +537,80 @@ class App(QWidget):
         self.tYmax.setText(saveList[48])
         self.tZmax.setText(saveList[49])
         self.tPP.setText(saveList[50])
+        self.tSkip.setText(saveList[51])
         
     # Button to save values to a file for use later
     def on_click1(self):
-        saveList = ["" for i in range(51)]
+        saveList = ["" for i in range(52)]
         
         # Takes the values from the text boxes in the GUI and saves them each in a seperate line in the .txt file
-        saveList[0] = str(self.tEx.text()) + " \n"
-        saveList[1] = str(self.tEy.text()) + " \n"
-        saveList[2] = str(self.tEz.text()) + " \n"
-        saveList[3] = str(self.tBx.text()) + " \n"
-        saveList[4] = str(self.tBy.text()) + " \n"
-        saveList[5] = str(self.tBz.text()) + " \n"
-        saveList[6] = str(self.tp1x.text()) + " \n"
-        saveList[7] = str(self.tp1y.text()) + " \n"
-        saveList[8] = str(self.tp1z.text()) + " \n"
-        saveList[9] = str(self.tp2x.text()) + " \n"
-        saveList[10] = str(self.tp2y.text()) + " \n"
-        saveList[11] = str(self.tp2z.text()) + " \n"
-        saveList[12] = str(self.tp3x.text()) + " \n"
-        saveList[13] = str(self.tp3y.text()) + " \n"
-        saveList[14] = str(self.tp3z.text()) + " \n"
-        saveList[15] = str(self.tp4x.text()) + " \n"
-        saveList[16] = str(self.tp4y.text()) + " \n"
-        saveList[17] = str(self.tp4z.text()) + " \n"
-        saveList[18] = str(self.tp1Vx.text()) + " \n"
-        saveList[19] = str(self.tp1Vy.text()) + " \n"
-        saveList[20] = str(self.tp1Vz.text()) + " \n"
-        saveList[21] = str(self.tp2Vx.text()) + " \n"
-        saveList[22] = str(self.tp2Vy.text()) + " \n"
-        saveList[23] = str(self.tp2Vz.text()) + " \n"
-        saveList[24] = str(self.tp3Vx.text()) + " \n"
-        saveList[25] = str(self.tp3Vy.text()) + " \n"
-        saveList[26] = str(self.tp3Vz.text()) + " \n"
-        saveList[27] = str(self.tp4Vx.text()) + " \n"
-        saveList[28] = str(self.tp4Vy.text()) + " \n"
-        saveList[29] = str(self.tp4Vz.text()) + " \n"
-        saveList[30] = str(self.tp1q.text()) + " \n"
-        saveList[31] = str(self.tp2q.text()) + " \n"
-        saveList[32] = str(self.tp3q.text()) + " \n"
-        saveList[33] = str(self.tp4q.text()) + " \n"
-        saveList[34] = str(self.tp1m.text()) + " \n"
-        saveList[35] = str(self.tp2m.text()) + " \n"
-        saveList[36] = str(self.tp3m.text()) + " \n"
-        saveList[37] = str(self.tp4m.text()) + " \n"
-        saveList[38] = str(self.ta.text()) + " \n"
-        saveList[39] = str(self.tb.text()) + " \n"
-        saveList[40] = str(self.tc.text()) + " \n"
-        saveList[41] = str(self.td.text()) + " \n"
-        saveList[42] = str(self.tTT.text()) + " \n"
-        saveList[43] = str(self.tdt.text()) + " \n"
-        saveList[44] = str(self.tXmin.text()) + " \n"
-        saveList[45] = str(self.tYmin.text()) + " \n"
-        saveList[46] = str(self.tZmin.text()) + " \n"
-        saveList[47] = str(self.tXmax.text()) + " \n"
-        saveList[48] = str(self.tYmax.text()) + " \n"
-        saveList[49] = str(self.tZmax.text()) + " \n"
-        saveList[50] = str(self.tPP.text()) + "\n"
+        saveList[0] = str(self.tEx.text())
+        saveList[1] = str(self.tEy.text())
+        saveList[2] = str(self.tEz.text())
+        saveList[3] = str(self.tBx.text())
+        saveList[4] = str(self.tBy.text())
+        saveList[5] = str(self.tBz.text())
+        saveList[6] = str(self.tp1x.text())
+        saveList[7] = str(self.tp1y.text())
+        saveList[8] = str(self.tp1z.text())
+        saveList[9] = str(self.tp2x.text())
+        saveList[10] = str(self.tp2y.text())
+        saveList[11] = str(self.tp2z.text())
+        saveList[12] = str(self.tp3x.text())
+        saveList[13] = str(self.tp3y.text())
+        saveList[14] = str(self.tp3z.text())
+        saveList[15] = str(self.tp4x.text())
+        saveList[16] = str(self.tp4y.text())
+        saveList[17] = str(self.tp4z.text())
+        saveList[18] = str(self.tp1Vx.text())
+        saveList[19] = str(self.tp1Vy.text())
+        saveList[20] = str(self.tp1Vz.text())
+        saveList[21] = str(self.tp2Vx.text())
+        saveList[22] = str(self.tp2Vy.text())
+        saveList[23] = str(self.tp2Vz.text())
+        saveList[24] = str(self.tp3Vx.text())
+        saveList[25] = str(self.tp3Vy.text())
+        saveList[26] = str(self.tp3Vz.text())
+        saveList[27] = str(self.tp4Vx.text())
+        saveList[28] = str(self.tp4Vy.text())
+        saveList[29] = str(self.tp4Vz.text())
+        saveList[30] = str(self.tp1q.text())
+        saveList[31] = str(self.tp2q.text())
+        saveList[32] = str(self.tp3q.text())
+        saveList[33] = str(self.tp4q.text())
+        saveList[34] = str(self.tp1m.text())
+        saveList[35] = str(self.tp2m.text())
+        saveList[36] = str(self.tp3m.text())
+        saveList[37] = str(self.tp4m.text())
+        saveList[38] = str(self.ta.text())
+        saveList[39] = str(self.tb.text())
+        saveList[40] = str(self.tc.text())
+        saveList[41] = str(self.td.text())
+        saveList[42] = str(self.tTT.text())
+        saveList[43] = str(self.tdt.text())
+        saveList[44] = str(self.tXmin.text())
+        saveList[45] = str(self.tYmin.text())
+        saveList[46] = str(self.tZmin.text())
+        saveList[47] = str(self.tXmax.text())
+        saveList[48] = str(self.tYmax.text())
+        saveList[49] = str(self.tZmax.text())
+        saveList[50] = str(self.tPP.text())
+        saveList[51] = str(self.tSkip.text())
         
         filename = self.getText()
         
         # Saves the file
         File = open(filename, 'w')
         if filename != 'error':
-            for i in range(51):
-                File.write(str(saveList[i]))
+            for i in range(52):
+                File.write(str(saveList[i])+"\n")
             File.close()
         else:
             self.errorSave()
         
     # Generates a prompt to ask for a file name for the file that is being saved
     def getText(self):
-        filename, okPressed = QInputDialog.getText(self, "Save file","Input file name:", QLineEdit.Normal, "particle.txt")
+        filename, okPressed = QInputDialog.getText(self, "Filename","Input file name:", QLineEdit.Normal, "particle.txt")
         if (okPressed) and (filename != '.txt') and ('.txt' in filename):
             return filename
         else:
@@ -622,8 +629,6 @@ class App(QWidget):
     def errorEval(self):
         QMessageBox.warning(self,'error',"Please just put an equation in the textbox.\nThis is so you don't break your computer.")
         
-        
-        
     def paintEvent(self,event):
         # Create the lines in the GUI for visual effects
         qp = QPainter(self)
@@ -636,37 +641,31 @@ class App(QWidget):
             qp.drawPoint(i,122)
             qp.drawPoint(i,272)
 
-        
+    
 # Main is called from the start of the program with the GUI
-def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim,PP):
-
+def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim,PP,Skip):
     t = 0
     R = np.zeros((4,3))
-    
     # Graphing initalizations for the 3-d graphs
     fig = plt.figure()
     ax = p3.Axes3D(fig)
-    
     # Setting the axes properties
     ax.set_xlim3d([dim[1,0],dim[0,0]])
     ax.set_xlabel('X')
-
     ax.set_ylim3d([dim[1,1],dim[0,1]])
     ax.set_ylabel('Y')
-
     ax.set_zlim3d([dim[1,2],dim[0,2]])
     ax.set_zlabel('Z')
-
     ax.set_title('Particle Motion')
     
-    
+    posInital = pos.copy() #The .copy() is required because otherwise python just copies the pointer and not the values so when it calls posInital after changing pos it would call the same
+    Jump = 0
+
     # Looping through from t=0 to t=TotalTime to run the simulation.
     while t < TotalTime:
-        # Half time step to help the simulation be more stable due to part of the simulation using the centerpoint rule.
+        # Half time step to help the eval part of the simulation be more stable due to part of the simulation using the centerpoint rule.
         t += dt/2
-        
         R = Dist(R,pos)
-        posInital = pos.copy() #The .copy() is required because otherwise python just copies the pointer and not the values so when it calls posInital after changing pos it would call the same
         
         # Calculating the Total E and B fields in x,y,z at each particle then passing the E,B fields back at each particle
         E,B = Fields(R,E0,B0,pos,vel,q,a,b,c,d,t)
@@ -678,18 +677,23 @@ def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim,PP):
         pos,vel = Move(pos,vel,F,m,dt)
         
         t += dt/2
-        # Prints the new particle positions to the screen
-        Draw(pos,posInital,t,ax,PP)
+        
+        if Jump == Skip:
+            # Prints the new particle positions to the screen
+            Draw(pos,posInital,ax,PP)
+            Jump = 0
+            posInital = pos.copy()
+        else:
+            Jump += 1
+    ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True) # Put points at the ending position of the particle
     
-    
-    # This is the complete call of the Dist() function, I am just parcing as much as I can for both troubleshooting and readability.
+# This is the complete call of the Dist() function, I am just parcing as much as I can for both troubleshooting and readability.
 def Dist(R,pos):
     for j in range(4):
-        R[j,0] = sqrt((pos[j,0]-pos[j-1,0])**2+(pos[j,1]-pos[j-1,1])**2+(pos[j,2]-pos[j-1,2])**2)# distance between particle j and particle j-1
-        R[j,1] = sqrt((pos[j,0]-pos[j-2,0])**2+(pos[j,1]-pos[j-2,1])**2+(pos[j,2]-pos[j-2,2])**2)# distance between particle j and particle j-2
-        R[j,2] = sqrt((pos[j,0]-pos[j-3,0])**2+(pos[j,1]-pos[j-3,1])**2+(pos[j,2]-pos[j-3,2])**2)# distance between particle j and particle j-3
+        R[j,0] = sqrt((pos[j,0]-pos[j-1,0])**2+(pos[j,1]-pos[j-1,1])**2+(pos[j,2]-pos[j-1,2])**2) # distance between particle j and particle j-1
+        R[j,1] = sqrt((pos[j,0]-pos[j-2,0])**2+(pos[j,1]-pos[j-2,1])**2+(pos[j,2]-pos[j-2,2])**2) # distance between particle j and particle j-2
+        R[j,2] = sqrt((pos[j,0]-pos[j-3,0])**2+(pos[j,1]-pos[j-3,1])**2+(pos[j,2]-pos[j-3,2])**2) # distance between particle j and particle j-3
     return R
-    
     
 def Fields(R,E0,B0,pos,vel,q,a,b,c,d,t):
     e0 = 8.854*10**(-12) # Epsilon naught in [N][m]^2[C]^-2
@@ -701,12 +705,10 @@ def Fields(R,E0,B0,pos,vel,q,a,b,c,d,t):
     
     for i in range(3):
         for j in range(4):
-            
             # Declaring the x,y,z values per particle to allow the eval() statements to use them.
             x = pos[j,0]
             y = pos[j,1]
             z = pos[j,2]
-
             # Total Electric field as calculated by the external electric field and the position of the other charges.
             """ E = evaluate(external field at the particle j) + 1/4pi*e0 * each particle: q*Rvector/Rmag**3 """
             E[j,i] = eval(E0[i])
@@ -741,17 +743,18 @@ def Move(pos,vel,F,m,dt):
             vel[j,i] = vel[j,i] + dt*(F[j,i]/m[j])         # Stepping the velocity of the particle j forward by dt
             pos[j,i] = pos[j,i] + dt*(vel[j,i]+vol[j])/2   # Stepping the position of the particle j forward by dt using the midpoint of the velocity
     return pos,vel
-    
+
 # This does all the drawing of the points and lines to the screen. It might be able to be optimised but it works as is so I'm just going to leave it for now.
-def Draw(pos,posInital,tDraw,ax,PP):
+def Draw(pos,posInital,ax,PP):
     for j in range(4):
         ax.plot([posInital[j,0],pos[j,0]],[posInital[j,1],pos[j,1]],[posInital[j,2],pos[j,2]],'b') 
-        pts = ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True)
+        # This if statement makes it so if you put a plot pause time of 0 seconds then it will not
+        #   display the graph until it is finished graphing but it will speed up the program quite a bit
         if PP != 0:
+            pts = ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c='g', depthshade=True)
             plt.pause(PP)
-        pts.remove()
-
-        
+            pts.remove()
+       
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
