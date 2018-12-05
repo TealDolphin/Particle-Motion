@@ -1,6 +1,5 @@
 """
-This is a complete program, I will optimise some of the extraneous code later for final submition,
-    but every individual part of the code seems to be working as of now. 11/21/2018
+This is a complete program, sufficient for class submition but not perfect.
 """
 # import section of the code, everything but PyQt5 is already in python by default
 import sys
@@ -54,16 +53,16 @@ class App(QWidget):
         self.lC = QLabel('Constants',self)
         self.lC.move(320,10)
         
-        self.lp1 = QLabel('Particle 1',self)
+        self.lp1 = QLabel('Particle 1 -blue',self)
         self.lp1.move(40,130)
         
-        self.lp2 = QLabel('Particle 2',self)
+        self.lp2 = QLabel('Particle 2 -green',self)
         self.lp2.move(320,130)
         
-        self.lp3 = QLabel('Particle 3',self)
+        self.lp3 = QLabel('Particle 3 -red',self)
         self.lp3.move(40,280)
         
-        self.lp4 = QLabel('Particle 4',self)
+        self.lp4 = QLabel('Particle 4 -black',self)
         self.lp4.move(320,280)
         
         self.lGraph = QLabel('Graph Dimentions',self)
@@ -383,7 +382,7 @@ class App(QWidget):
         self.lPP = QLabel('Pause Time:',self)
         self.lPP.move(600,215)
         
-        # Only graph every {Skip} calculations
+        # Only graph every {Skip} calculations to greatly reduce the amount of RAM used
         self.tSkip = QLineEdit(self)
         self.tSkip.move(630,300)
         self.tSkip.resize(100,20)
@@ -403,7 +402,8 @@ class App(QWidget):
         pos = np.zeros((4,3))
         vel = np.zeros((4,3))
         dim = np.zeros((2,3))
-        # Section to pass all the info in the text boxes into variables.
+        
+        # Section to pass all the info in the text boxes into variables to pass into the main()
         E0[0] = self.tEx.text()
         E0[1] = self.tEy.text()
         E0[2] = self.tEz.text()
@@ -461,10 +461,11 @@ class App(QWidget):
         if ("_" in E0) or ("eval" in E0) or ("_" in B0) or ("eval" in B0):
             self.errorEval()
         else:
+            # Catch a user error of them trying to put a negative pause time.
             if PP < 0:
                 self.errorPP()
             else:
-                colour = ['b','g','r','k']
+                colour = ['b','g','r','k'] # Make the particles each a different color
                 # Calling the main function with the variables in the text boxes
                 Main(E0,B0,pos,vel,q,mass,a,b,c,d,TotalTime,dt,dim,PP,Skip,colour)
 
@@ -631,7 +632,7 @@ class App(QWidget):
         QMessageBox.warning(self,'error',"Please just put an equation in the textbox.\nThis is so you don't break your computer.")
         
     def paintEvent(self,event):
-        # Create the lines in the GUI for visual effects
+        # Create the lines in the GUI for visual effects/readability
         qp = QPainter(self)
         qp.setPen(Qt.black)
         size = self.size()
@@ -645,7 +646,7 @@ class App(QWidget):
     
 # Main is called from the start of the program with the GUI
 def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim,PP,Skip,colour):
-    t = 0
+    t = 0                # Time starts at zero for every graph generated.
     R = np.zeros((4,3))
     # Graphing initalizations for the 3-d graphs
     fig = plt.figure()
@@ -666,8 +667,9 @@ def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim,PP,Skip,colour):
     while t < TotalTime:
         # Half time step to help the eval part of the simulation be more stable due to part of the simulation using the centerpoint rule.
         t += dt/2
-        R = Dist(R,pos)
         
+        # R is the distance in each direction that each particle is from each other
+        R = Dist(R,pos)
         # Calculating the Total E and B fields in x,y,z at each particle then passing the E,B fields back at each particle
         E,B = Fields(R,E0,B0,pos,vel,q,a,b,c,d,t)
         
@@ -679,13 +681,16 @@ def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim,PP,Skip,colour):
         
         t += dt/2
         
-        if Jump == Skip:
+        # this if statement determines if you draw the particles to the screen on this calculation
+        # using large skip values with small dt values means the calculations are quite accurate without loosing graph resolution or using too much ram
+        if Jump >= Skip:
             # Prints the new particle positions to the screen
             Draw(pos,posInital,ax,PP,colour)
             Jump = 0
             posInital = pos.copy()
         else:
             Jump += 1
+    # This plots points at the ending positions of the particles
     for j in range(4):
         pts = ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c=colour[j], depthshade=True) # Put points at the ending position of the particle
     
