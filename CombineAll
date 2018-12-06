@@ -631,12 +631,11 @@ class App(QWidget):
     def errorEval(self):
         QMessageBox.warning(self,'error',"Please just put an equation in the textbox.\nThis is so you don't break your computer.")
         
+    # Creates the lines in the GUI for visual effects/readability
     def paintEvent(self,event):
-        # Create the lines in the GUI for visual effects/readability
         qp = QPainter(self)
         qp.setPen(Qt.black)
         size = self.size()
-        
         for i in range(580):
             qp.drawPoint(580,i)
             qp.drawPoint(290,i)
@@ -695,6 +694,7 @@ def Main(E0,B0,pos,vel,q,m,a,b,c,d,TotalTime,dt,dim,PP,Skip,colour):
         pts = ax.scatter3D(pos[j,0],pos[j,1],pos[j,2],zdir='z',s=20,c=colour[j], depthshade=True) # Put points at the ending position of the particle
     
 # This is the complete call of the Dist() function, I am just parcing as much as I can for both troubleshooting and readability.
+# This function calculates the distance in each cordinate that the particles are away from each other.
 def Dist(R,pos):
     for j in range(4):
         R[j,0] = sqrt((pos[j,0]-pos[j-1,0])**2+(pos[j,1]-pos[j-1,1])**2+(pos[j,2]-pos[j-1,2])**2) # distance between particle j and particle j-1
@@ -702,6 +702,7 @@ def Dist(R,pos):
         R[j,2] = sqrt((pos[j,0]-pos[j-3,0])**2+(pos[j,1]-pos[j-3,1])**2+(pos[j,2]-pos[j-3,2])**2) # distance between particle j and particle j-3
     return R
     
+# This function returns both the E and B fields at each particle
 def Fields(R,E0,B0,pos,vel,q,a,b,c,d,t):
     e0 = 8.854*10**(-12) # Epsilon naught in [N][m]^2[C]^-2
     u0 = 4*pi*10**(-7)   # Vaccum Magnetic permitivity constant in [N][s]^2[C]^-2
@@ -710,18 +711,22 @@ def Fields(R,E0,B0,pos,vel,q,a,b,c,d,t):
     E = np.zeros((4,3))
     B = np.zeros((4,3))
     
+    # Loops for both each of the cartesian coordinates and each particle respectively
     for i in range(3):
         for j in range(4):
+        
             # Declaring the x,y,z values per particle to allow the eval() statements to use them.
             x = pos[j,0]
             y = pos[j,1]
             z = pos[j,2]
+            
             # Total Electric field as calculated by the external electric field and the position of the other charges.
             """ E = evaluate(external field at the particle j) + 1/4pi*e0 * each particle: q*Rvector/Rmag**3 """
             E[j,i] = eval(E0[i])
             E[j,i] = E[j,i] + (1/(4*pi*e0))*(q[j-1]*((pos[j,i] - pos[j-1,i])/(R[j,0]**3)))
             E[j,i] = E[j,i] + (1/(4*pi*e0))*(q[j-2]*((pos[j,i] - pos[j-2,i])/(R[j,1]**3))) 
             E[j,i] = E[j,i] + (1/(4*pi*e0))*(q[j-3]*((pos[j,i] - pos[j-3,i])/(R[j,2]**3)))
+            
             # Total Magnetic field in Cartesian directions
             """ B = evaluate(external field at the particle j) + u0/4pi * each particle: =\/
             Each moving particle generates an electric field, x case is shown below. Remember that there are three particles that need to be considered.
@@ -731,7 +736,7 @@ def Fields(R,E0,B0,pos,vel,q,a,b,c,d,t):
                 + (q[j-3]*(vel[j-3,i-2]*(pos[j,i-1]-pos[j-3,i-1]) - vel[j-3,i-1]*(pos[j,i-2]-pos[j-3,i-1]))/(R[j,2]**3)))        
     return E,B
     
-# Calculate the forces on each particle.
+# Calculate the forces on each particle from the known fields
 def Forces(E,B,vel,q):
     F = np.zeros((4,3))
     for i in range(3):
@@ -746,6 +751,8 @@ def Move(pos,vel,F,m,dt):
     for i in range(3):
         # Making vol hold all of the information for one dimention and all the particles to step the position forward by the midpoint of velocity
         vol[:] = vel[:,i]
+        
+        # Looping over each particle
         for j in range(4):
             vel[j,i] = vel[j,i] + dt*(F[j,i]/m[j])         # Stepping the velocity of the particle j forward by dt
             pos[j,i] = pos[j,i] + dt*(vel[j,i]+vol[j])/2   # Stepping the position of the particle j forward by dt using the midpoint of the velocity
@@ -753,6 +760,8 @@ def Move(pos,vel,F,m,dt):
 
 # This does all the drawing of the points and lines to the screen. It might be able to be optimised but it works as is so I'm just going to leave it for now.
 def Draw(pos,posInital,ax,PP,colour):
+    
+    # Loop over each particle and graph a line from the inital position to the current position
     for j in range(4):
         ax.plot([posInital[j,0],pos[j,0]],[posInital[j,1],pos[j,1]],[posInital[j,2],pos[j,2]],colour[j]) 
         # This if statement makes it so if you put a plot pause time of 0 seconds then it will not
