@@ -1,6 +1,14 @@
 """
 This is a complete program, sufficient for class submition but not perfect.
+It does require that you download PyQt5 in addiotion to python.
+
+This program is designed to take four particles in in addition to any external electric or magnetic fields inputable
+    and to graph how the system evolves with time. This model only models non-relativistic systems. That being said,
+    it is still quite a powerful tool. Gravity is not currently implimented because it is a program designed to work 
+    with the much stronger electromagnetic force. The Strong and Weak forces are also not implimented both due to 
+    their complexity and due to the cases in which it would apply.
 """
+
 # import section of the code, everything but PyQt5 is already in python by default
 import sys
 import numpy as np
@@ -12,6 +20,8 @@ from PyQt5.QtWidgets import QMessageBox, QLabel, QApplication, QWidget, QPushBut
 
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
+
+# Nathaniel Elkins:    nelkins@email.arizona.edu:    Final Submition for grade- 12/5/2018
 
 # This section is exclusively deticated to making the GUI for this particle motion program
 class App(QWidget):
