@@ -1,0 +1,8 @@
+# Gravitational field calculation
+Gc = # Gravitational constant in 
+# F = GMm(r-r')/(|r-r'|^3)
+G[j,i] = Gc*((m[j-1]*((pos[j,i] - pos[j-1,i])/(R[j,0]**3))) + (m[j-2]*((pos[j,i] - pos[j-2,i])/(R[j,1]**3))) + (m[j-3]*((pos[j,i] - pos[j-3,i])/(R[j,2]**3))))
+
+# F[j,i] = q[j]*(E[j,i] + (vel[j,i-2]*B[j,i-1] - vel[j,i-1]*B[j,i-2])) + m[j]*G[j,i]
+# Just add
+ + m[j]*G[j,i]
